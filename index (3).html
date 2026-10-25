@@ -1,0 +1,1278 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jurnal SI Web dan Mobile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Schibsted+Grotesk:wght@500;700;800&display=swap">
+<style>
+/* Layout: satu kolom editorial, judul kiri dengan motif tiga ukuran layar,
+   ringkasan angka sebagai baris bergaris, lalu tab Materi / Tugas / Tentang. */
+:root {
+  --bg: #F2F4F7;
+  --surface: #FFFFFF;
+  --fg: #121C27;
+  --muted: #55657A;
+  --line: #D8DEE6;
+  --accent: #1F4FD8;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #E3EAFB;
+  --ok: #17724A;
+  --ok-soft: #DCF2E5;
+  --warn: #8F5400;
+  --warn-soft: #FBEACB;
+  --bad: #B0261C;
+  --bad-soft: #FADFDB;
+  --idle: #55657A;
+  --idle-soft: #E6EAF0;
+  --display: 'Schibsted Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E141B;
+    --surface: #151D27;
+    --fg: #E6ECF2;
+    --muted: #9AA8B8;
+    --line: #26313D;
+    --accent: #86A5FF;
+    --accent-ink: #0E141B;
+    --accent-soft: #1B2745;
+    --ok: #5FD39A;
+    --ok-soft: #12301F;
+    --warn: #F0B45A;
+    --warn-soft: #33260E;
+    --bad: #FF8F85;
+    --bad-soft: #3A1714;
+    --idle: #9AA8B8;
+    --idle-soft: #212B37;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E141B;
+  --surface: #151D27;
+  --fg: #E6ECF2;
+  --muted: #9AA8B8;
+  --line: #26313D;
+  --accent: #86A5FF;
+  --accent-ink: #0E141B;
+  --accent-soft: #1B2745;
+  --ok: #5FD39A;
+  --ok-soft: #12301F;
+  --warn: #F0B45A;
+  --warn-soft: #33260E;
+  --bad: #FF8F85;
+  --bad-soft: #3A1714;
+  --idle: #9AA8B8;
+  --idle-soft: #212B37;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.55;
+  padding-block: 20px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 60rem; margin-inline: auto; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+button { font: inherit; color: inherit; cursor: pointer; }
+
+.mono { font-family: var(--mono); }
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Header */
+.top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.theme-btn {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.8125rem;
+  min-height: 36px;
+}
+.theme-btn:hover { border-color: var(--accent); }
+.hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-top: 28px; flex-wrap: wrap; }
+.hero-text { min-width: 0; flex: 1 1 22rem; }
+h1 {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: clamp(2rem, 6.5vw, 3.5rem);
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  margin: 8px 0 14px;
+  text-wrap: balance;
+}
+.lede { color: var(--muted); max-width: 42rem; margin: 0; text-wrap: pretty; }
+.devices { color: var(--accent); flex: 0 0 auto; }
+.devices svg { display: block; max-width: 100%; height: auto; }
+.devices figcaption { font-family: var(--mono); font-size: 0.6875rem; color: var(--muted); letter-spacing: 0.04em; margin-top: 6px; }
+.devices { margin: 0; }
+
+/* Ringkasan */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 0 24px; margin-top: 32px; }
+.stat { border-top: 2px solid var(--fg); padding-top: 10px; padding-bottom: 14px; min-width: 0; }
+.stat-value { font-family: var(--display); font-weight: 700; font-size: 1.75rem; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.stat-value small { font-family: var(--body); font-weight: 400; font-size: 0.875rem; color: var(--muted); }
+.stat-label { font-family: var(--mono); font-size: 0.6875rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+
+/* Tab */
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-top: 20px; overflow-x: auto; }
+.tab {
+  background: none;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  padding: 10px 14px 9px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  color: var(--muted);
+  white-space: nowrap;
+  margin-bottom: -1px;
+}
+.tab:hover { color: var(--fg); }
+.tab[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); }
+.tab .count { font-family: var(--mono); font-weight: 400; font-size: 0.75rem; color: var(--muted); margin-left: 6px; }
+
+.notice {
+  display: flex; gap: 10px; align-items: baseline;
+  margin: 18px 0 0;
+  padding: 10px 12px;
+  background: var(--warn-soft);
+  color: var(--warn);
+  border-radius: 6px;
+  font-size: 0.875rem;
+}
+.notice .eyebrow { color: inherit; flex: 0 0 auto; }
+
+/* Toolbar */
+.toolbar { display: flex; flex-direction: column; gap: 12px; margin: 22px 0 8px; }
+.search {
+  width: 100%;
+  max-width: 26rem;
+  min-height: 42px;
+  padding: 8px 12px;
+  background: var(--surface);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font: inherit;
+}
+.search::placeholder { color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.8125rem;
+  min-height: 32px;
+}
+.chip:hover { border-color: var(--accent); }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+
+/* Materi */
+.list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+details.item { border-bottom: 1px solid var(--line); }
+details.item > summary {
+  display: grid;
+  grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+  gap: 4px 12px;
+  align-items: baseline;
+  padding: 14px 4px;
+  cursor: pointer;
+  list-style: none;
+}
+details.item > summary::-webkit-details-marker { display: none; }
+details.item > summary:hover .item-title { color: var(--accent); }
+.item-code { font-family: var(--mono); font-size: 0.8125rem; color: var(--accent); font-weight: 500; }
+.item-title { font-family: var(--display); font-weight: 700; font-size: 1.125rem; line-height: 1.3; min-width: 0; }
+.item-date { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
+.item-meta { grid-column: 2 / 4; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.tag { font-family: var(--mono); font-size: 0.6875rem; letter-spacing: 0.04em; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 1px 7px; }
+.tag.soon { color: var(--warn); border-color: transparent; background: var(--warn-soft); }
+details.item[data-soon] .item-title { color: var(--muted); }
+.item-body { padding: 2px 4px 20px calc(3.25rem + 16px); max-width: 46rem; }
+.item-body p { margin: 0 0 10px; }
+.item-body ul { margin: 0 0 12px; padding-left: 1.1rem; }
+.item-body li { margin-bottom: 4px; }
+.links { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 0; padding: 0; list-style: none; }
+.links a { color: var(--accent); text-underline-offset: 3px; font-size: 0.9375rem; }
+.empty { padding: 28px 4px; color: var(--muted); }
+
+/* Tugas */
+.task {
+  display: grid;
+  grid-template-columns: 3.25rem minmax(0, 1fr) 9rem 8rem;
+  gap: 6px 12px;
+  align-items: start;
+  padding: 16px 4px;
+  border-bottom: 1px solid var(--line);
+}
+.task-main { min-width: 0; }
+.task-title { font-family: var(--display); font-weight: 700; font-size: 1.125rem; line-height: 1.3; margin: 0 0 2px; }
+.task-desc { margin: 0; color: var(--muted); font-size: 0.9375rem; }
+.task-ref { font-family: var(--mono); font-size: 0.6875rem; color: var(--muted); margin-top: 6px; letter-spacing: 0.04em; }
+.due { font-variant-numeric: tabular-nums; font-size: 0.9375rem; }
+.due small { display: block; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
+.due small.late { color: var(--bad); }
+.due small.near { color: var(--warn); }
+.pill {
+  justify-self: start;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--idle-soft);
+  color: var(--idle);
+}
+.pill::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: currentColor; margin-right: 7px; }
+.pill[data-s="dikerjakan"] { background: var(--accent-soft); color: var(--accent); }
+.pill[data-s="dikumpulkan"] { background: var(--warn-soft); color: var(--warn); }
+.pill[data-s="dinilai"] { background: var(--ok-soft); color: var(--ok); }
+
+/* Tentang */
+.about { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 28px 40px; margin-top: 24px; }
+.about h2 { font-family: var(--display); font-size: 1.125rem; margin: 0 0 10px; }
+.facts { margin: 0; display: grid; grid-template-columns: 7rem minmax(0, 1fr); gap: 8px 12px; }
+.facts dt { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; padding-top: 3px; }
+.facts dd { margin: 0; }
+.steps { margin: 0; padding-left: 1.2rem; }
+.steps li { margin-bottom: 8px; }
+code { font-family: var(--mono); font-size: 0.875em; background: var(--idle-soft); padding: 1px 6px; border-radius: 4px; }
+
+.tools-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.btn { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 8px 16px; min-height: 40px; font-size: 0.9375rem; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.btn:disabled { opacity: 0.6; cursor: default; }
+.tform { margin: 8px 0 20px; padding: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+.tform-title { font-family: var(--display); font-size: 1.125rem; margin: 0 0 14px; }
+.fgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 14px; }
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field.wide { grid-column: 1 / -1; }
+.field span { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.field input, .field textarea, .field select, .status-select { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; min-height: 40px; width: 100%; }
+.field textarea { resize: vertical; }
+.form-actions { display: flex; gap: 8px; margin-top: 16px; }
+.msg { margin: 10px 0; padding: 8px 12px; border-radius: 6px; background: var(--bad-soft); color: var(--bad); font-size: 0.875rem; }
+.task-actions { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; }
+.link-btn { background: none; border: 0; padding: 2px 0; color: var(--accent); font-size: 0.875rem; text-decoration: underline; text-underline-offset: 3px; }
+.link-btn.danger { color: var(--bad); font-weight: 600; }
+.status-select { width: auto; max-width: 100%; min-height: 36px; padding: 4px 8px; font-size: 0.8125rem; font-family: var(--mono); }
+.status-select[data-s="dikerjakan"] { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+.status-select[data-s="dikumpulkan"] { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+.status-select[data-s="dinilai"] { background: var(--ok-soft); color: var(--ok); border-color: transparent; }
+.task-title .tag { margin-left: 8px; vertical-align: middle; font-weight: 400; }
+.flabel { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.hint { color: var(--muted); font-size: 0.8125rem; }
+.field input[type="file"] { padding: 6px 8px; }
+.filelist { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.filelist li { display: flex; flex-wrap: wrap; gap: 2px 12px; align-items: baseline; font-size: 0.875rem; min-width: 0; overflow-wrap: anywhere; }
+.fsize { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
+.filelinks { margin-top: 8px; }
+.foot { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
+
+@media (max-width: 40rem) {
+  .item-body { padding-left: 4px; }
+  .task { grid-template-columns: 3rem minmax(0, 1fr); }
+  .task .due, .task .pill { grid-column: 2; }
+  .item-date { grid-column: 2; text-align: left; }
+  details.item > summary { grid-template-columns: 3rem minmax(0, 1fr); }
+  .item-meta { grid-column: 2; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tab, .chip, .theme-btn { transition: color 0.15s, border-color 0.15s, background 0.15s; }
+}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header>
+    <div class="top">
+      <span class="eyebrow" id="eyebrow"></span>
+      <button class="theme-btn" id="themeBtn" type="button">Mode gelap</button>
+    </div>
+    <div class="hero">
+      <div class="hero-text">
+        <h1 id="judul"></h1>
+        <p class="lede" id="lede"></p>
+      </div>
+      <figure class="devices" aria-hidden="true">
+        <svg width="132" height="64" viewBox="0 0 132 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+          <rect x="2" y="4" width="66" height="42" rx="3"/>
+          <path d="M26 58h18M35 46v12"/>
+          <rect x="76" y="16" width="30" height="40" rx="4"/>
+          <path d="M88 51h6"/>
+          <rect x="112" y="26" width="16" height="30" rx="3"/>
+          <path d="M118 51h4"/>
+        </svg>
+        <figcaption>1280 · 768 · 360 px</figcaption>
+      </figure>
+    </div>
+  </header>
+
+  <section class="stats" aria-label="Ringkasan">
+    <div class="stat"><div class="stat-label">Materi terbit</div><div class="stat-value" id="sMateri"></div></div>
+    <div class="stat"><div class="stat-label">Tugas selesai</div><div class="stat-value" id="sTugas"></div></div>
+    <div class="stat"><div class="stat-label">Tenggat terdekat</div><div class="stat-value" id="sTenggat"></div></div>
+  </section>
+
+  <div class="tabs" role="tablist" aria-label="Bagian situs">
+    <button class="tab" role="tab" id="tab-materi" aria-controls="panel-materi" data-tab="materi" type="button">Materi<span class="count" id="cMateri"></span></button>
+    <button class="tab" role="tab" id="tab-tugas" aria-controls="panel-tugas" data-tab="tugas" type="button">Tugas<span class="count" id="cTugas"></span></button>
+    <button class="tab" role="tab" id="tab-tentang" aria-controls="panel-tentang" data-tab="tentang" type="button">Tentang</button>
+  </div>
+
+  <p class="notice" id="notice" hidden><span class="eyebrow">Contoh</span><span>Materi di halaman ini adalah isi contoh. Ganti dengan data kuliah yang sebenarnya pada objek DATA di bagian skrip. Tugas dikelola langsung dari tab Tugas.</span></p>
+
+  <main>
+    <section id="panel-materi" role="tabpanel" aria-labelledby="tab-materi" hidden>
+      <div class="toolbar">
+        <input class="search" id="q" type="search" placeholder="Cari materi, mis. REST, ERD, Flutter" aria-label="Cari materi" autocomplete="off">
+        <div class="chips" id="tagChips" role="group" aria-label="Filter topik"></div>
+      </div>
+      <div id="materiList"></div>
+    </section>
+
+    <section id="panel-tugas" role="tabpanel" aria-labelledby="tab-tugas" hidden>
+      <div class="toolbar">
+        <div class="chips" id="statusChips" role="group" aria-label="Filter status"></div>
+        <div class="tools-row">
+          <button class="btn primary" id="addBtn" type="button" hidden>Tambah tugas</button>
+          <button class="btn" id="authBtn" type="button" hidden>Masuk pemilik</button>
+          <span class="eyebrow" id="storeNote"></span>
+        </div>
+      </div>
+      <form class="tform" id="loginForm" hidden novalidate>
+        <h3 class="tform-title">Masuk sebagai pemilik</h3>
+        <div class="fgrid">
+          <label class="field" for="l-email"><span>Email</span><input id="l-email" type="email" autocomplete="username"></label>
+          <label class="field" for="l-pass"><span>Kata sandi</span><input id="l-pass" type="password" autocomplete="current-password"></label>
+        </div>
+        <p class="msg" id="loginErr" role="alert" hidden></p>
+        <div class="form-actions">
+          <button class="btn primary" type="submit" id="loginSubmit">Masuk</button>
+          <button class="btn" type="button" id="loginCancel">Batal</button>
+        </div>
+      </form>
+      <form class="tform" id="tugasForm" hidden novalidate>
+        <h3 class="tform-title" id="formTitle">Tambah tugas</h3>
+        <div class="fgrid">
+          <label class="field wide" for="f-judul"><span>Judul tugas</span><input id="f-judul" type="text" maxlength="120" required></label>
+          <label class="field wide" for="f-deskripsi"><span>Deskripsi</span><textarea id="f-deskripsi" rows="2" maxlength="400"></textarea></label>
+          <label class="field" for="f-tenggat"><span>Tenggat</span><input id="f-tenggat" type="date" required></label>
+          <label class="field" for="f-status"><span>Status</span><select id="f-status"></select></label>
+          <label class="field" for="f-pertemuan"><span>Terkait pertemuan</span><input id="f-pertemuan" type="text" maxlength="40" placeholder="mis. P05"></label>
+          <label class="field" for="f-kode"><span>Kode</span><input id="f-kode" type="text" maxlength="8" placeholder="otomatis, mis. T8"></label>
+          <label class="field wide" for="f-tautan"><span>Tautan berkas (Google Drive, GitHub, dan sejenisnya)</span><input id="f-tautan" type="url" maxlength="300" placeholder="https://"></label>
+          <div class="field wide" id="fileBox" hidden>
+            
+          <label class="flabel" for="f-berkas">Unggah berkas</label>
+          <input
+            id="f-berkas"
+            type="file"
+            multiple
+            accept=".pdf,.docx,.pptx,.zip,.png,.jpg,.jpeg,.gif,.webp,.mp4,.webm,.txt,.md,.csv,.json"
+          >
+          <span class="hint" id="fileHint">
+            PDF, Word (DOCX), PowerPoint (PPTX), ZIP, gambar, video, atau teks.
+            Maksimal 20 MB per berkas.
+          </span>
+          <ul class="filelist" id="fileList"></ul>
+          </div>
+
+        </div>
+        <p class="msg" id="formErr" role="alert" hidden></p>
+        <div class="form-actions">
+          <button class="btn primary" type="submit" id="saveBtn">Simpan</button>
+          <button class="btn" type="button" id="cancelBtn">Batal</button>
+        </div>
+      </form>
+      <p class="msg" id="tugasMsg" role="status" hidden></p>
+      <div id="tugasList"></div>
+    </section>
+
+    <section id="panel-tentang" role="tabpanel" aria-labelledby="tab-tentang" hidden>
+      <div class="about">
+        <div>
+          <h2>Pemilik situs</h2>
+          <dl class="facts" id="facts"></dl>
+        </div>
+        <div>
+          <h2>Cara memperbarui isi</h2>
+          <ol class="steps">
+            <li>Tugas: buka tab Tugas, tekan <strong>Tambah tugas</strong>, lalu ubah status lewat menu di tiap baris. Perubahan tersimpan otomatis.</li>
+            <li>Materi: cari objek <code>DATA</code> di bagian skrip, lalu tambah satu blok pada daftar <code>materi</code> setiap selesai pertemuan.</li>
+            <li>Simpan berkas, lalu publish atau unggah ulang. Tugas yang sudah dicatat tidak ikut hilang.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot" id="foot"></footer>
+</div>
+
+<script src="config.js"></script>
+<script>
+const DATA = {
+  contoh: true,
+  meta: {
+    nama: 'Dika',
+    prodi: 'S1 Teknik Informatika',
+    kampus: 'Universitas Muhammadiyah Cirebon',
+    fakultas: 'Fakultas Teknik',
+    kelas: 'TI24D',
+    semester: 'Ganjil 2026/2027',
+    matkul: 'Sistem Informasi Berbasis Web/Mobile'
+  },
+  materi: [
+    { kode: 'P01', tanggal: '2026-09-08', judul: 'Pengantar Sistem Informasi Web dan Mobile', tag: ['Dasar'],
+      ringkas: 'Peta mata kuliah, jenis aplikasi, dan siklus pengembangan sistem informasi.',
+      poin: ['Aplikasi web, PWA, hybrid, dan native beserta kelebihan dan batasannya', 'SDLC, perbedaan Waterfall dan Agile', 'Aturan penilaian dan alat kerja semester ini'],
+      tautan: [{ label: 'MDN Learn Web Development', url: 'https://developer.mozilla.org/en-US/docs/Learn' }] },
+    { kode: 'P02', tanggal: '2026-09-15', judul: 'Arsitektur Client-Server dan HTTP', tag: ['Dasar', 'Web'],
+      ringkas: 'Cara browser, server, dan basis data bertukar data lewat HTTP.',
+      poin: ['Siklus request dan response, metode GET, POST, PUT, DELETE', 'Kode status 200, 301, 400, 401, 404, 500', 'Membaca tab Network di DevTools'],
+      tautan: [{ label: 'MDN: Gambaran umum HTTP', url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview' }] },
+    { kode: 'P03', tanggal: '2026-09-22', judul: 'HTML dan CSS Responsif', tag: ['Web'],
+      ringkas: 'Menyusun halaman yang tetap rapi di layar desktop, tablet, dan ponsel.',
+      poin: ['HTML semantik dan dasar aksesibilitas', 'Flexbox, Grid, media query, pendekatan mobile-first', 'Titik patah umum 360, 768, dan 1280 px'],
+      tautan: [] },
+    { kode: 'P04', tanggal: '2026-09-29', judul: 'JavaScript dan DOM', tag: ['Web'],
+      ringkas: 'Membuat halaman interaktif dan mengambil data dari server.',
+      poin: ['Fungsi, array method, dan objek', 'Event, manipulasi DOM, fetch dengan async/await', 'Memisahkan data dari tampilan'],
+      tautan: [] },
+    { kode: 'P05', tanggal: '2026-10-06', judul: 'Backend dan REST API', tag: ['Backend', 'Web'],
+      ringkas: 'Membangun endpoint yang melayani data dalam format JSON.',
+      poin: ['Rute, controller, dan penamaan endpoint', 'Operasi CRUD dan kode status yang tepat', 'Menguji endpoint dengan Postman atau curl'],
+      tautan: [] },
+    { kode: 'P06', tanggal: '2026-10-13', judul: 'Perancangan Basis Data dan ERD', tag: ['Basis Data'],
+      ringkas: 'Dari kebutuhan sistem ke diagram relasi dan skema tabel.',
+      poin: ['Entitas, atribut, relasi, dan kardinalitas', 'Normalisasi sampai bentuk ketiga (3NF)', 'Kunci primer, kunci asing, dan indeks'],
+      tautan: [] },
+    { kode: 'P07', tanggal: '2026-10-20', judul: 'Autentikasi dan Manajemen Sesi', tag: ['Backend', 'Keamanan'],
+      ringkas: 'Login yang aman dan pembatasan akses berdasarkan peran.',
+      poin: ['Hash kata sandi dengan bcrypt', 'Sesi berbasis cookie dibanding token JWT', 'Kontrol akses per peran pengguna'],
+      tautan: [] },
+    { kode: 'P08', tanggal: '2026-10-27', judul: 'Ujian Tengah Semester', tag: ['Evaluasi'],
+      ringkas: 'Evaluasi materi pertemuan 1 sampai 7.',
+      poin: ['Cakupan P01 sampai P07', 'Siapkan ringkasan alur HTTP, ERD, dan alur login'],
+      tautan: [] },
+    { kode: 'P09', tanggal: '2026-11-03', judul: 'Dasar Pengembangan Aplikasi Mobile', tag: ['Mobile'],
+      ringkas: 'Memilih pendekatan native, hybrid, atau lintas platform dan memulai proyek pertama.',
+      poin: ['Widget atau komponen, layout, dan navigasi dasar', 'Menjalankan emulator dan perangkat fisik', 'Struktur folder proyek mobile'],
+      tautan: [] },
+    { kode: 'P10', tanggal: '2026-11-10', judul: 'State dan Navigasi Aplikasi Mobile', tag: ['Mobile'],
+      ringkas: 'Mengelola data yang berubah dan perpindahan antar layar.',
+      poin: ['State lokal dibanding state global', 'Navigasi bertumpuk dan tab bawah', 'Membagi layar menjadi komponen kecil'],
+      tautan: [] },
+    { kode: 'P11', tanggal: '2026-11-17', judul: 'Mengonsumsi API di Aplikasi Mobile', tag: ['Mobile', 'Web'],
+      ringkas: 'Menghubungkan aplikasi mobile ke REST API buatan sendiri.',
+      poin: ['HTTP client dan parsing JSON', 'Tampilan loading, kosong, dan error', 'Penyimpanan lokal dan koneksi lambat'],
+      tautan: [] },
+    { kode: 'P12', tanggal: '2026-11-24', judul: 'UI/UX dan Uji Usability', tag: ['UX'],
+      ringkas: 'Merancang antarmuka yang mudah dipakai dan membuktikannya ke pengguna.',
+      poin: ['Sepuluh heuristik usability Nielsen', 'Wireframe dan prototipe interaktif', 'Uji coba dengan lima pengguna'],
+      tautan: [{ label: 'Nielsen Norman Group: 10 heuristik', url: 'https://www.nngroup.com/articles/ten-usability-heuristics/' }] },
+    { kode: 'P13', tanggal: '2026-12-01', judul: 'Pengujian Perangkat Lunak', tag: ['Dasar'],
+      ringkas: 'Memastikan fitur bekerja sebelum dirilis.',
+      poin: ['Unit test dan integration test', 'Skenario uji manual dan laporan bug', 'Cakupan uji pada fitur inti'],
+      tautan: [] },
+    { kode: 'P14', tanggal: '2026-12-08', judul: 'Deploy dan Hosting', tag: ['Web', 'Backend'],
+      ringkas: 'Membawa aplikasi dari laptop ke alamat yang bisa dibuka orang lain.',
+      poin: ['Variabel lingkungan dan konfigurasi produksi', 'Hosting statis dibanding hosting server', 'HTTPS dan pengaturan domain'],
+      tautan: [] },
+    { kode: 'P15', tanggal: '2026-12-15', judul: 'Keamanan Aplikasi Web dan Mobile', tag: ['Keamanan'],
+      ringkas: 'Celah yang paling sering muncul dan cara menutupnya.',
+      poin: ['Gambaran OWASP Top 10', 'SQL injection, XSS, dan CSRF beserta pencegahannya', 'Validasi input di sisi server'],
+      tautan: [{ label: 'OWASP Top Ten', url: 'https://owasp.org/www-project-top-ten/' }] },
+    { kode: 'P16', tanggal: '2026-12-22', judul: 'Ujian Akhir Semester', tag: ['Evaluasi'],
+      ringkas: 'Evaluasi seluruh materi dan presentasi proyek akhir.',
+      poin: ['Penekanan pada P09 sampai P15', 'Siapkan demo proyek akhir'],
+      tautan: [] }
+  ]
+};
+
+const STATUS_LABEL = { belum: 'Belum mulai', dikerjakan: 'Dikerjakan', dikumpulkan: 'Dikumpulkan', dinilai: 'Dinilai' };
+const DONE = ['dikumpulkan', 'dinilai'];
+const TABS = ['materi', 'tugas', 'tentang'];
+
+const $ = (id) => document.getElementById(id);
+function el(tag, cls, text) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+}
+function parseDate(s) { const p = s.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); }
+function startOfToday() { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+function daysFrom(s) { return Math.round((parseDate(s) - startOfToday()) / 86400000); }
+function fmt(s, withDay) {
+  const o = { day: 'numeric', month: 'short', year: 'numeric' };
+  if (withDay) o.weekday = 'short';
+  return parseDate(s).toLocaleDateString('id-ID', o);
+}
+
+const state = { tab: 'materi', tag: 'Semua', q: '', status: 'Semua' };
+let tasks = [], tasksLoaded = false, tasksError = '', canWrite = false, store = null, mode = '';
+let editingId = null, confirmId = null;
+const CONFIG = window.JURNAL_CONFIG || {};
+let session = null;
+let downloadsApi = null, assetsApi = null, formFiles = [], newFiles = [], removedIds = [];
+
+/* Header dan ringkasan */
+function renderHeader() {
+  const m = DATA.meta;
+  $('eyebrow').textContent = m.kelas + ' · Semester ' + m.semester;
+  $('judul').textContent = m.matkul;
+  $('lede').textContent = 'Materi tiap pertemuan dan tugas kuliah milik ' + m.nama + ', ' + m.prodi + ', ' + m.kampus + '.';
+  $('notice').hidden = !DATA.contoh;
+
+  const posted = DATA.materi.filter((x) => daysFrom(x.tanggal) <= 0).length;
+  $('sMateri').innerHTML = posted + ' <small>dari ' + DATA.materi.length + ' pertemuan</small>';
+  $('cMateri').textContent = DATA.materi.length;
+  $('foot').textContent = 'Diperbarui dari berkas situs · ' + m.matkul + ' · ' + m.kampus;
+}
+
+/* Materi */
+function renderTagChips() {
+  const tags = ['Semua'];
+  DATA.materi.forEach((x) => x.tag.forEach((t) => { if (!tags.includes(t)) tags.push(t); }));
+  const box = $('tagChips');
+  box.textContent = '';
+  tags.forEach((t) => {
+    const b = el('button', 'chip', t);
+    b.type = 'button';
+    b.setAttribute('aria-pressed', String(state.tag === t));
+    b.addEventListener('click', () => { state.tag = t; renderTagChips(); renderMateri(); });
+    box.appendChild(b);
+  });
+}
+function renderMateri() {
+  const q = state.q.trim().toLowerCase();
+  const rows = DATA.materi.filter((x) => {
+    if (state.tag !== 'Semua' && !x.tag.includes(state.tag)) return false;
+    if (!q) return true;
+    return (x.kode + ' ' + x.judul + ' ' + x.ringkas + ' ' + x.poin.join(' ') + ' ' + x.tag.join(' ')).toLowerCase().includes(q);
+  });
+  const box = $('materiList');
+  box.textContent = '';
+  if (!rows.length) { box.appendChild(el('p', 'empty', 'Tidak ada materi yang cocok. Coba kata kunci lain atau pilih topik Semua.')); return; }
+  const list = el('div', 'list');
+  rows.forEach((x) => {
+    const soon = daysFrom(x.tanggal) > 0;
+    const d = document.createElement('details');
+    d.className = 'item';
+    if (soon) d.setAttribute('data-soon', '');
+    const s = document.createElement('summary');
+    s.appendChild(el('span', 'item-code', x.kode));
+    s.appendChild(el('span', 'item-title', x.judul));
+    s.appendChild(el('span', 'item-date', fmt(x.tanggal, true)));
+    const meta = el('span', 'item-meta');
+    x.tag.forEach((t) => meta.appendChild(el('span', 'tag', t)));
+    if (soon) meta.appendChild(el('span', 'tag soon', 'Akan datang'));
+    s.appendChild(meta);
+    d.appendChild(s);
+    const body = el('div', 'item-body');
+    body.appendChild(el('p', null, x.ringkas));
+    if (x.poin.length) {
+      const ul = el('ul');
+      x.poin.forEach((p) => ul.appendChild(el('li', null, p)));
+      body.appendChild(ul);
+    }
+    if (x.tautan && x.tautan.length) {
+      const ul = el('ul', 'links');
+      x.tautan.forEach((l) => {
+        const li = el('li');
+        const a = el('a', null, l.label + ' ↗');
+        a.href = l.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+        li.appendChild(a); ul.appendChild(li);
+      });
+      body.appendChild(ul);
+    }
+    d.appendChild(body);
+    list.appendChild(d);
+  });
+  box.appendChild(list);
+}
+
+/* Tugas */
+function renderStatusChips() {
+  const opts = ['Semua', 'Belum selesai', 'Selesai'];
+  const box = $('statusChips');
+  box.textContent = '';
+  opts.forEach((t) => {
+    const b = el('button', 'chip', t);
+    b.type = 'button';
+    b.setAttribute('aria-pressed', String(state.status === t));
+    b.addEventListener('click', () => { state.status = t; renderStatusChips(); renderTugas(); });
+    box.appendChild(b);
+  });
+}
+function setStat(id, big, small) {
+  const n = $(id);
+  n.textContent = '';
+  if (big) n.appendChild(document.createTextNode(big + ' '));
+  n.appendChild(el('small', null, small));
+}
+function renderStats() {
+  if (!tasksLoaded || tasksError) {
+    setStat('sTugas', '', tasksError ? 'Belum tersedia' : 'Memuat');
+    setStat('sTenggat', '', tasksError ? 'Belum tersedia' : 'Memuat');
+    $('cTugas').textContent = '';
+    return;
+  }
+  const done = tasks.filter((t) => DONE.includes(t.status)).length;
+  const open = tasks.filter((t) => !DONE.includes(t.status) && t.tenggat).sort((a, b) => a.tenggat.localeCompare(b.tenggat));
+  setStat('sTugas', String(done), 'dari ' + tasks.length + ' tugas');
+  const nx = open[0];
+  if (nx) {
+    const d = daysFrom(nx.tenggat);
+    setStat('sTenggat', nx.kode || 'Tugas', d < 0 ? 'terlambat ' + Math.abs(d) + ' hari' : d === 0 ? 'hari ini' : d + ' hari lagi');
+  } else {
+    setStat('sTenggat', '', tasks.length ? 'Semua tugas terkumpul' : 'Belum ada tugas');
+  }
+  $('cTugas').textContent = tasks.length;
+}
+function renderAllTugas() { renderStats(); renderTugas(); }
+
+function storeNoteText() {
+  if (mode === 'db') return canWrite ? 'Tersimpan otomatis di akun Claude' : 'Hanya pemilik yang dapat mengubah tugas';
+  if (mode === 'supa') return canWrite ? 'Tersimpan di database Supabase. Anda masuk sebagai pemilik.' : 'Hanya pemilik yang dapat mengubah tugas';
+  if (mode === 'lokal') return 'Tersimpan di browser ini. Berkas dicatat lewat tautan.';
+  return '';
+}
+function showMsg(text) { const m = $('tugasMsg'); m.textContent = text || ''; m.hidden = !text; }
+function errText(e) {
+  const c = e && e.code;
+  if (c === 'quota_exceeded') return 'Penyimpanan penuh. Hapus beberapa tugas lama, lalu coba lagi.';
+  if (c === 'invalid_argument') return 'Perubahan ditolak. Hanya pemilik halaman yang dapat mengubah tugas.';
+  return 'Perubahan belum tersimpan. Periksa koneksi, lalu coba lagi.';
+}
+async function changeStatus(id, status) {
+  showMsg('');
+  try { await store.patch(id, { status: status }); } catch (e) { showMsg(errText(e)); renderTugas(); }
+}
+async function removeTask(id) {
+  confirmId = null;
+  showMsg('');
+  const old = tasks.find((x) => x.id === id);
+  try {
+    await store.remove(id);
+    if (assetsApi && old && Array.isArray(old.berkas)) {
+      old.berkas.forEach((b) => { assetsApi.delete(b.id).catch(() => {}); });
+    }
+  } catch (e) { showMsg(errText(e)); renderTugas(); }
+}
+function nextKode() {
+  let n = 0;
+  tasks.forEach((t) => { const m = /^T(\d+)$/i.exec(t.kode || ''); if (m) n = Math.max(n, Number(m[1])); });
+  return 'T' + (n + 1);
+}
+function buildStatusOptions() {
+  const sel = $('f-status');
+  Object.keys(STATUS_LABEL).forEach((k) => {
+    const o = document.createElement('option');
+    o.value = k; o.textContent = STATUS_LABEL[k];
+    sel.appendChild(o);
+  });
+}
+
+const TYPE_BY_EXT = {
+  pdf: 'application/pdf',
+  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  zip: 'application/zip',
+  png: 'image/png',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  gif: 'image/gif',
+  webp: 'image/webp',
+  mp4: 'video/mp4',
+  webm: 'video/webm',
+  txt: 'text/plain',
+  md: 'text/markdown',
+  csv: 'text/csv',
+  json: 'application/json'
+};
+
+function typeFor(f) {
+  const m = /\.([A-Za-z0-9]+)$/.exec(f.name || '');
+  const ext = m ? m[1].toLowerCase() : '';
+  const knownType = TYPE_BY_EXT[ext];
+
+  if (mode === 'supa') {
+    return knownType || f.type || 'application/octet-stream';
+  }
+
+  return knownType || '';
+}
+
+
+function fmtSize(n) {
+  if (!n) return '';
+  if (n < 1024) return n + ' B';
+  if (n < 1048576) return Math.round(n / 1024) + ' KB';
+  return (n / 1048576).toLocaleString('id-ID', { maximumFractionDigits: 1 }) + ' MB';
+}
+function uploadErrText(e) {
+  const c = e && e.code;
+  if (c === 'too_large') return 'Berkas terlalu besar. Maksimal 20 MB per berkas.';
+  if (c === 'unsupported_type') return 'Jenis berkas belum didukung. Gunakan PDF, gambar, video, atau teks, atau tempel tautan.';
+  if (c === 'quota_or_state') return 'Penyimpanan berkas penuh. Hapus berkas lama atau pakai tautan.';
+  if (c === 'rate_limited') return 'Terlalu banyak unggahan sekaligus. Tunggu sebentar, lalu coba lagi.';
+  return errText(e);
+}
+function renderFileList() {
+  const ul = $('fileList');
+  ul.textContent = '';
+  formFiles.forEach((b, i) => {
+    const li = el('li');
+    li.appendChild(el('span', null, b.nama));
+    li.appendChild(el('span', 'fsize', fmtSize(b.ukuran)));
+    const x = el('button', 'link-btn', 'Lepas');
+    x.type = 'button';
+    x.addEventListener('click', () => { removedIds.push(b.id); formFiles.splice(i, 1); renderFileList(); });
+    li.appendChild(x);
+    ul.appendChild(li);
+  });
+  newFiles.forEach((f, i) => {
+    const li = el('li');
+    li.appendChild(el('span', null, f.name));
+    li.appendChild(el('span', 'fsize', fmtSize(f.size) + ' · akan diunggah'));
+    const x = el('button', 'link-btn', 'Batal');
+    x.type = 'button';
+    x.addEventListener('click', () => { newFiles.splice(i, 1); renderFileList(); });
+    li.appendChild(x);
+    ul.appendChild(li);
+  });
+}
+$('f-berkas').addEventListener('change', (e) => {
+  const err = $('formErr');
+  err.hidden = true;
+  Array.from(e.target.files).forEach((f) => {
+    if (!typeFor(f)) { err.textContent = f.name + ' tidak bisa diunggah. Gunakan PDF, gambar, video, atau teks, atau tempel tautan.'; err.hidden = false; return; }
+    if (f.size > 20 * 1024 * 1024) { err.textContent = f.name + ' lebih dari 20 MB.'; err.hidden = false; return; }
+    newFiles.push(f);
+  });
+  e.target.value = '';
+  renderFileList();
+});
+const HINT_DEFAULT = $('fileHint').textContent;
+function openForm(t) {
+  editingId = t ? t.id : null;
+  $('formTitle').textContent = t ? 'Ubah tugas' : 'Tambah tugas';
+  $('f-judul').value = t ? (t.judul || '') : '';
+  $('f-deskripsi').value = t ? (t.deskripsi || '') : '';
+  $('f-tenggat').value = t ? (t.tenggat || '') : '';
+  $('f-status').value = t ? (t.status || 'belum') : 'belum';
+  $('f-pertemuan').value = t ? (t.pertemuan || '') : '';
+  $('f-kode').value = t ? (t.kode || '') : '';
+  $('f-tautan').value = t ? (t.tautan || '') : '';
+  formFiles = t && Array.isArray(t.berkas) ? t.berkas.map((b) => Object.assign({}, b)) : [];
+  newFiles = [];
+  removedIds = [];
+  $('fileBox').hidden = !assetsApi;
+  $('fileHint').textContent = mode === 'supa' ? 'Semua jenis berkas, maksimal 20 MB per berkas.' : HINT_DEFAULT;
+  if (mode === 'supa') $('f-berkas').removeAttribute('accept');
+  renderFileList();
+  $('formErr').hidden = true;
+  $('tugasForm').hidden = false;
+  $('f-judul').focus();
+}
+function closeForm() { editingId = null; formFiles = []; newFiles = []; removedIds = []; $('tugasForm').hidden = true; }
+$('addBtn').addEventListener('click', () => openForm(null));
+$('cancelBtn').addEventListener('click', closeForm);
+$('tugasForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const err = $('formErr');
+  const judul = $('f-judul').value.trim();
+  const tenggat = $('f-tenggat').value;
+  if (!judul || !tenggat) { err.textContent = 'Isi judul dan tenggat tugas.'; err.hidden = false; return; }
+  const btn = $('saveBtn');
+  btn.disabled = true;
+  const data = {
+    judul: judul,
+    deskripsi: $('f-deskripsi').value.trim(),
+    tenggat: tenggat,
+    status: $('f-status').value,
+    pertemuan: $('f-pertemuan').value.trim(),
+    kode: $('f-kode').value.trim(),
+    tautan: $('f-tautan').value.trim()
+  };
+  if (data.tautan && !/^https?:\/\//i.test(data.tautan)) {
+    err.textContent = 'Tautan harus diawali http:// atau https://.';
+    err.hidden = false;
+    btn.disabled = false;
+    return;
+  }
+  const uploaded = [];
+  try {
+    for (const f of newFiles) {
+      const r = await assetsApi.upload(f, { type: typeFor(f) });
+      uploaded.push({ id: r.id, nama: f.name.slice(0, 120), ukuran: r.sizeBytes, tipe: r.contentType });
+    }
+    data.berkas = formFiles.concat(uploaded);
+    if (editingId) {
+      await store.patch(editingId, data);
+    } else {
+      if (!data.kode) data.kode = nextKode();
+      data.dibuat = new Date().toISOString();
+      await store.add(data);
+    }
+    removedIds.forEach((id) => { assetsApi.delete(id).catch(() => {}); });
+    closeForm();
+    showMsg('');
+  } catch (ex) {
+    uploaded.forEach((u) => { assetsApi.delete(u.id).catch(() => {}); });
+    err.textContent = uploadErrText(ex);
+    err.hidden = false;
+  }
+  btn.disabled = false;
+});
+
+const EXT_BY_TYPE = { 'application/pdf': 'pdf', 'image/png': 'png', 'image/jpeg': 'jpg', 'image/gif': 'gif', 'image/webp': 'webp', 'video/mp4': 'mp4', 'video/webm': 'webm', 'text/plain': 'txt', 'text/markdown': 'md', 'text/csv': 'csv', 'application/json': 'json' };
+function downloadName(b) {
+  const nama = b.nama || 'berkas';
+  if (/\.[A-Za-z0-9]{2,5}$/.test(nama)) return nama;
+  return nama + '.' + (EXT_BY_TYPE[b.tipe] || 'pdf');
+}
+async function downloadFile(b) {
+  showMsg('');
+  try {
+    const res = await fetch('/_blob/' + b.id);
+    if (!res.ok) throw new Error('http ' + res.status);
+    const blob = await res.blob();
+    await downloadsApi.save({ filename: downloadName(b), data: blob });
+  } catch (e) {
+    if (e && e.code === 'declined') return;
+    showMsg(e && e.code === 'rejected_extension' ? 'Jenis berkas ini tidak bisa diunduh dari halaman.' : 'Berkas belum bisa diunduh. Muat ulang halaman, lalu coba lagi.');
+  }
+}
+function renderTugas() {
+  const box = $('tugasList');
+  box.textContent = '';
+  const editable = canWrite && !!store;
+  $('addBtn').hidden = !editable;
+  $('storeNote').textContent = storeNoteText();
+  renderAuth();
+  if (!tasksLoaded) { box.appendChild(el('p', 'empty', 'Memuat tugas...')); return; }
+  if (tasksError) { box.appendChild(el('p', 'empty', tasksError)); return; }
+  const rows = tasks.filter((t) => {
+    if (state.status === 'Selesai') return DONE.includes(t.status);
+    if (state.status === 'Belum selesai') return !DONE.includes(t.status);
+    return true;
+  }).sort((a, b) => (a.tenggat || '9999').localeCompare(b.tenggat || '9999'));
+  if (!rows.length) {
+    box.appendChild(el('p', 'empty', tasks.length ? 'Belum ada tugas pada kategori ini.' : (editable ? 'Belum ada tugas. Tekan Tambah tugas untuk mencatat yang pertama.' : 'Belum ada tugas yang dicatat.')));
+    return;
+  }
+  const list = el('div', 'list');
+  rows.forEach((t) => {
+    const r = el('div', 'task');
+    r.appendChild(el('span', 'item-code', t.kode || '-'));
+    const main = el('div', 'task-main');
+    const h = el('h3', 'task-title', t.judul || '(tanpa judul)');
+    if (t.contoh) h.appendChild(el('span', 'tag soon', 'contoh'));
+    main.appendChild(h);
+    if (t.deskripsi) main.appendChild(el('p', 'task-desc', t.deskripsi));
+    if (t.pertemuan) main.appendChild(el('div', 'task-ref', 'Terkait ' + t.pertemuan));
+    const files = [];
+    (Array.isArray(t.berkas) ? t.berkas : []).forEach((b) => {
+      if (b && mode === 'supa' && b.id) files.push({ href: supaPublic(b.id), label: b.nama || 'Berkas', size: fmtSize(b.ukuran) });
+      else if (b && /^[0-9a-f]{32}$/.test(b.id)) files.push({ b: b, label: b.nama || 'Berkas', size: fmtSize(b.ukuran) });
+    });
+    if (t.tautan && /^https?:\/\//i.test(t.tautan)) files.push({ href: t.tautan, label: 'Tautan berkas', size: '' });
+    if (files.length) {
+      const ul = el('ul', 'links filelinks');
+      files.forEach((f) => {
+        const li = el('li');
+        if (f.href) {
+          const a = el('a', null, f.label + ' ↗');
+          a.href = f.href; a.target = '_blank'; a.rel = 'noopener noreferrer';
+          li.appendChild(a);
+        } else if (downloadsApi) {
+          const bt = el('button', 'link-btn', 'Unduh ' + f.label);
+          bt.type = 'button';
+          bt.addEventListener('click', () => downloadFile(f.b));
+          li.appendChild(bt);
+        } else {
+          li.appendChild(el('span', null, f.label));
+        }
+        if (f.size) li.appendChild(el('span', 'fsize', ' ' + f.size));
+        ul.appendChild(li);
+      });
+      main.appendChild(ul);
+    }
+    if (editable) {
+      const act = el('div', 'task-actions');
+      const eb = el('button', 'link-btn', 'Ubah');
+      eb.type = 'button';
+      eb.addEventListener('click', () => openForm(t));
+      act.appendChild(eb);
+      if (confirmId === t.id) {
+        const yes = el('button', 'link-btn danger', 'Yakin hapus?');
+        yes.type = 'button';
+        yes.addEventListener('click', () => removeTask(t.id));
+        const no = el('button', 'link-btn', 'Batal');
+        no.type = 'button';
+        no.addEventListener('click', () => { confirmId = null; renderTugas(); });
+        act.appendChild(yes); act.appendChild(no);
+      } else {
+        const del = el('button', 'link-btn', 'Hapus');
+        del.type = 'button';
+        del.addEventListener('click', () => { confirmId = t.id; renderTugas(); });
+        act.appendChild(del);
+      }
+      main.appendChild(act);
+    }
+    r.appendChild(main);
+    const due = el('div', 'due', t.tenggat ? fmt(t.tenggat, false) : 'Tanpa tenggat');
+    if (t.tenggat) {
+      const d = daysFrom(t.tenggat);
+      let cls = '', txt = '';
+      if (DONE.includes(t.status)) { txt = 'Sudah terkumpul'; }
+      else if (d < 0) { cls = 'late'; txt = 'Terlambat ' + Math.abs(d) + ' hari'; }
+      else if (d === 0) { cls = 'near'; txt = 'Hari ini'; }
+      else { cls = d <= 7 ? 'near' : ''; txt = d + ' hari lagi'; }
+      due.appendChild(el('small', cls, txt));
+    }
+    r.appendChild(due);
+    if (editable) {
+      const sel = document.createElement('select');
+      sel.className = 'status-select';
+      sel.id = 'st-' + t.id;
+      sel.setAttribute('aria-label', 'Status ' + (t.kode || t.judul || 'tugas'));
+      sel.setAttribute('data-s', t.status);
+      Object.keys(STATUS_LABEL).forEach((k) => {
+        const o = document.createElement('option');
+        o.value = k; o.textContent = STATUS_LABEL[k];
+        if (k === t.status) o.selected = true;
+        sel.appendChild(o);
+      });
+      sel.addEventListener('change', () => changeStatus(t.id, sel.value));
+      r.appendChild(sel);
+    } else {
+      const p = el('span', 'pill', STATUS_LABEL[t.status] || t.status || 'Belum mulai');
+      p.setAttribute('data-s', t.status);
+      r.appendChild(p);
+    }
+    list.appendChild(r);
+  });
+  box.appendChild(list);
+}
+
+/* Penyimpanan tugas: db Claude bila tersedia, localStorage untuk versi mandiri */
+function makeDbStore(db) {
+  const col = db.collection('tugas');
+  return {
+    add: (d) => col.add(d),
+    patch: (id, d) => col.doc(id).update(d),
+    remove: (id) => col.doc(id).delete(),
+    start() {
+      col.onSnapshot((snap) => {
+        tasks = snap.docs.map((d) => Object.assign({ id: d.id }, d.data()));
+        tasksLoaded = true; tasksError = '';
+        renderAllTugas();
+      }, () => {
+        tasksLoaded = true;
+        tasksError = 'Daftar tugas tidak dapat dimuat pada tampilan ini.';
+        renderAllTugas();
+      });
+    }
+  };
+}
+function makeLocalStore() {
+  const KEY = 'jurnal-tugas';
+  let list = [];
+  try { const raw = localStorage.getItem(KEY); if (raw) { const p = JSON.parse(raw); if (Array.isArray(p)) list = p; } } catch (e) {}
+  const save = () => {
+    try { localStorage.setItem(KEY, JSON.stringify(list)); } catch (e) {}
+    tasks = list.slice();
+    renderAllTugas();
+  };
+  return {
+    add: async (d) => { list.push(Object.assign({ id: 't' + Date.now().toString(36) }, d)); save(); },
+    patch: async (id, d) => { list = list.map((t) => (t.id === id ? Object.assign({}, t, d) : t)); save(); },
+    remove: async (id) => { list = list.filter((t) => t.id !== id); save(); },
+    start() { tasks = list.slice(); tasksLoaded = true; renderAllTugas(); }
+  };
+}
+/* Mode Supabase: dipakai bila config.js terisi dan halaman dibuka di luar Claude */
+function supaBase() { return String(CONFIG.supabaseUrl || '').replace(/\/+$/, ''); }
+function supaPublic(path) { return supaBase() + '/storage/v1/object/public/berkas/' + path; }
+function loadSession() {
+  try { const raw = localStorage.getItem('jurnal-supa-session'); session = raw ? JSON.parse(raw) : null; } catch (e) { session = null; }
+}
+function saveSession(sn) {
+  session = sn;
+  try { if (sn) localStorage.setItem('jurnal-supa-session', JSON.stringify(sn)); else localStorage.removeItem('jurnal-supa-session'); } catch (e) {}
+}
+function toSession(j) {
+  return { access_token: j.access_token, refresh_token: j.refresh_token, expires_at: j.expires_at || (Math.floor(Date.now() / 1000) + (j.expires_in || 3600)) };
+}
+async function supaRefresh() {
+  if (!session || !session.refresh_token) return;
+  if (session.expires_at && Date.now() / 1000 < session.expires_at - 60) return;
+  try {
+    const res = await fetch(supaBase() + '/auth/v1/token?grant_type=refresh_token', {
+      method: 'POST',
+      headers: { apikey: CONFIG.supabaseAnonKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: session.refresh_token })
+    });
+    if (!res.ok) throw new Error('refresh');
+    saveSession(toSession(await res.json()));
+  } catch (e) {
+    saveSession(null);
+    canWrite = false;
+    renderAllTugas();
+  }
+}
+async function supaFetch(path, opts) {
+  await supaRefresh();
+  const o = opts || {};
+  const headers = Object.assign({
+    apikey: CONFIG.supabaseAnonKey,
+    Authorization: 'Bearer ' + (session ? session.access_token : CONFIG.supabaseAnonKey)
+  }, o.headers || {});
+  const res = await fetch(supaBase() + path, Object.assign({}, o, { headers: headers }));
+  if (!res.ok) {
+  console.error('Detail error Supabase:', res.status, await res.clone().text());
+    let msg = '';
+    try { const b = await res.clone().json(); msg = String(b.message || b.error || ''); } catch (e) {}
+    const err = new Error('http ' + res.status);
+    if (res.status === 401 || res.status === 403 || /row-level security|jwt|not authorized/i.test(msg)) err.code = 'invalid_argument';
+    else if (res.status === 413) err.code = 'too_large';
+    else err.code = 'unavailable';
+    throw err;
+  }
+  return res;
+}
+function makeSupaStore() {
+  const JSON_H = { 'Content-Type': 'application/json', Prefer: 'return=minimal' };
+  const load = async () => {
+    try {
+      const res = await supaFetch('/rest/v1/tugas?select=*&order=tenggat.asc');
+      const rows = await res.json();
+      tasks = rows.map((r) => Object.assign({}, r, { berkas: Array.isArray(r.berkas) ? r.berkas : [] }));
+      tasksLoaded = true; tasksError = '';
+      renderAllTugas();
+    } catch (e) {
+      if (e.code === 'invalid_argument' && session) { saveSession(null); canWrite = false; return load(); }
+      throw e;
+    }
+  };
+  return {
+    add: async (d) => { await supaFetch('/rest/v1/tugas', { method: 'POST', headers: JSON_H, body: JSON.stringify(d) }); await load(); },
+    patch: async (id, d) => { await supaFetch('/rest/v1/tugas?id=eq.' + encodeURIComponent(id), { method: 'PATCH', headers: JSON_H, body: JSON.stringify(d) }); await load(); },
+    remove: async (id) => { await supaFetch('/rest/v1/tugas?id=eq.' + encodeURIComponent(id), { method: 'DELETE' }); await load(); },
+    start() {
+      load().catch(() => {
+        tasksLoaded = true;
+        tasksError = 'Daftar tugas tidak dapat dimuat. Periksa config.js, tabel di Supabase, dan koneksi internet.';
+        renderAllTugas();
+      });
+      window.addEventListener('focus', () => { load().catch(() => {}); });
+    }
+  };
+}
+
+function makeSupaAssets() {
+  return {
+    upload: async (file, options = {}) => {
+      const safe = file.name
+        .replace(/[^A-Za-z0-9._-]+/g, '-')
+        .replace(/^-+/, '')
+        .slice(-80) || 'berkas';
+
+      const path = Date.now().toString(36) + '-' + safe;
+      const contentType =
+        options.type || file.type || 'application/octet-stream';
+
+      await supaFetch('/storage/v1/object/berkas/' + path, {
+        method: 'POST',
+        headers: {
+          'Content-Type': contentType,
+          'x-upsert': 'false'
+        },
+        body: file
+      });
+
+      return {
+        id: path,
+        sizeBytes: file.size,
+        contentType: contentType
+      };
+    },
+
+    delete: (path) =>
+      supaFetch(
+        '/storage/v1/object/berkas/' + encodeURIComponent(path),
+        { method: 'DELETE' }
+      ).then(() => ({ deleted: true }))
+  };
+}
+
+function renderAuth() {
+  const b = $('authBtn');
+  b.hidden = mode !== 'supa';
+  b.textContent = session ? 'Keluar' : 'Masuk pemilik';
+}
+$('authBtn').addEventListener('click', () => {
+  if (session) {
+    saveSession(null);
+    canWrite = false;
+    closeForm();
+    renderAllTugas();
+  } else {
+    $('loginForm').hidden = false;
+    $('l-email').focus();
+  }
+});
+$('loginCancel').addEventListener('click', () => { $('loginForm').hidden = true; });
+$('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const err = $('loginErr');
+  err.hidden = true;
+  const btn = $('loginSubmit');
+  btn.disabled = true;
+  try {
+    const res = await fetch(supaBase() + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: { apikey: CONFIG.supabaseAnonKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: $('l-email').value.trim(), password: $('l-pass').value })
+    });
+    if (!res.ok) throw new Error('login');
+    saveSession(toSession(await res.json()));
+    $('l-pass').value = '';
+    $('loginForm').hidden = true;
+    canWrite = true;
+    renderAllTugas();
+  } catch (ex) {
+    err.textContent = 'Email atau kata sandi salah, atau koneksi bermasalah.';
+    err.hidden = false;
+  }
+  btn.disabled = false;
+});
+
+async function initStore() {
+  let db = null, user = null;
+  try {
+    if (window.claude && window.claude.use) {
+      db = await window.claude.use('db');
+      user = await window.claude.use('user');
+    }
+  } catch (e) { db = null; }
+  if (db) {
+    mode = 'db';
+    store = makeDbStore(db);
+    try { assetsApi = await window.claude.use('assets'); } catch (e) { assetsApi = null; }
+    try { downloadsApi = await window.claude.use('downloads'); } catch (e) { downloadsApi = null; }
+    try { canWrite = user ? await user.canEdit() : false; } catch (e) { canWrite = false; }
+    store.start();
+  } else if (window.claude) {
+    tasksLoaded = true;
+    tasksError = 'Daftar tugas hanya dapat dimuat bila Anda masuk ke akun Claude yang diberi akses ke halaman ini.';
+    renderAllTugas();
+  } else if (CONFIG.supabaseUrl && CONFIG.supabaseAnonKey) {
+    mode = 'supa';
+    loadSession();
+    canWrite = !!session;
+    assetsApi = makeSupaAssets();
+    store = makeSupaStore();
+    store.start();
+  } else {
+    mode = 'lokal';
+    canWrite = true;
+    store = makeLocalStore();
+    store.start();
+  }
+}
+
+/* Tentang */
+function renderAbout() {
+  const m = DATA.meta;
+  const rows = [['Nama', m.nama], ['Program', m.prodi], ['Fakultas', m.fakultas], ['Kampus', m.kampus], ['Kelas', m.kelas], ['Mata kuliah', m.matkul], ['Semester', m.semester]];
+  const dl = $('facts');
+  dl.textContent = '';
+  rows.forEach((r) => { dl.appendChild(el('dt', null, r[0])); dl.appendChild(el('dd', null, r[1])); });
+}
+
+/* Tab */
+function showTab(name) {
+  if (!TABS.includes(name)) name = 'materi';
+  state.tab = name;
+  TABS.forEach((t) => {
+    const sel = t === name;
+    $('tab-' + t).setAttribute('aria-selected', String(sel));
+    $('tab-' + t).tabIndex = sel ? 0 : -1;
+    $('panel-' + t).hidden = !sel;
+  });
+}
+document.querySelectorAll('.tab').forEach((b) => {
+  b.addEventListener('click', () => showTab(b.dataset.tab));
+  b.addEventListener('keydown', (e) => {
+    const i = TABS.indexOf(b.dataset.tab);
+    let n = -1;
+    if (e.key === 'ArrowRight') n = (i + 1) % TABS.length;
+    if (e.key === 'ArrowLeft') n = (i + TABS.length - 1) % TABS.length;
+    if (n >= 0) { showTab(TABS[n]); $('tab-' + TABS[n]).focus(); e.preventDefault(); }
+  });
+});
+$('q').addEventListener('input', (e) => { state.q = e.target.value; renderMateri(); });
+window.addEventListener('hashchange', () => showTab(location.hash.slice(1)));
+
+/* Tema */
+function effectiveTheme() {
+  const t = document.documentElement.getAttribute('data-theme');
+  if (t) return t;
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+function paintThemeBtn() { $('themeBtn').textContent = effectiveTheme() === 'dark' ? 'Mode terang' : 'Mode gelap'; }
+$('themeBtn').addEventListener('click', () => {
+  const next = effectiveTheme() === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try { localStorage.setItem('jurnal-theme', next); } catch (e) {}
+  paintThemeBtn();
+});
+try {
+  const saved = localStorage.getItem('jurnal-theme');
+  if (saved === 'light' || saved === 'dark') document.documentElement.setAttribute('data-theme', saved);
+} catch (e) {}
+
+renderHeader();
+renderTagChips();
+renderMateri();
+renderStatusChips();
+buildStatusOptions();
+renderAllTugas();
+renderAbout();
+paintThemeBtn();
+showTab(location.hash.slice(1) || 'materi');
+initStore();
+</script>
+
+</body>
+</html>
