@@ -1096,7 +1096,7 @@ a:hover { text-decoration: underline; }
         <label class="input-label" for="gatewayPasswordInput">
           <span>Kata Sandi</span>
           <div class="password-field-wrapper">
-            <input class="text-input" type="password" id="gatewayPasswordInput" required autocomplete="current-password" placeholder="admin123">
+            <input class="text-input" type="password" id="gatewayPasswordInput" required autocomplete="current-password" placeholder="Kata sandi">
             <button class="toggle-password-btn" type="button" id="toggleGatewayPassBtn" title="Tampilkan / Sembunyikan Sandi">
               <svg id="gatewayEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -1121,9 +1121,7 @@ a:hover { text-decoration: underline; }
         </button>
 
         <div class="login-hint-box" id="gatewayHintBox">
-          💡 <strong>Akses Cepat:</strong> Masukkan kata sandi <code>admin123</code> untuk mengelola seluruh data tugas.
-          <br>
-          <span class="hint-quick-btn" id="btnGatewayQuickFill">👉 Klik di sini untuk isi otomatis (Uji Coba)</span>
+          💡 <strong>Pemilik:</strong> masuk dengan akun Anda untuk mengelola tugas dan materi. Pengunjung cukup pilih mode tamu.
         </div>
       </div>
     </form>
@@ -1784,6 +1782,7 @@ const appState = {
   session: null,
   localUser: null,
   masterPass: 'admin123',
+  localLoginEnabled: !(window.JURNAL_CONFIG && window.JURNAL_CONFIG.supabaseUrl && window.JURNAL_CONFIG.supabaseAnonKey),
   editingTaskId: null,
   pendingFiles: [],
   formFiles: [],
@@ -2222,6 +2221,19 @@ function initAuthSystem() {
 
   updateAuthUI();
 
+  if (!appState.localLoginEnabled) {
+    localStorage.removeItem('dika-hub-local-session');
+    appState.localUser = null;
+    appState.isLoggedIn = !!appState.session;
+    appState.authMethod = 'supa';
+    overlay.hidden = appState.isLoggedIn;
+    $('tabGatewayLocal').hidden = true;
+    $('menuActionChangePass').hidden = true;
+    setGatewayMethodTab('supa');
+    $('gatewayEmailInput').value = '';
+    updateAuthUI();
+  }
+
   setupPasswordToggle('toggleGatewayPassBtn', 'gatewayPasswordInput', 'gatewayEyeIcon');
   setupPasswordToggle('toggleOldPassBtn', 'oldPasswordInput');
   setupPasswordToggle('toggleNewPassBtn', 'newPasswordInput');
@@ -2240,18 +2252,20 @@ function initAuthSystem() {
     setGatewayMethodTab('local');
   });
 
-  $('btnGatewayQuickFill').addEventListener('click', () => {
-    playCyberSound('click');
-    $('gatewayEmailInput').value = 'dika';
-    $('gatewayPasswordInput').value = appState.masterPass;
-    $('gatewayPasswordInput').focus();
-  });
-
   $('gatewayLoginForm').addEventListener('submit', handleGatewayLoginSubmit);
 
   $('btnContinueAsGuest').addEventListener('click', () => {
     playCyberSound('success');
     closeGatewayWithAnimation();
+    if (appState.isLoggedIn) {
+      localStorage.removeItem('jurnal-supa-session');
+      localStorage.removeItem('dika-hub-local-session');
+      appState.session = null;
+      appState.localUser = null;
+      appState.isLoggedIn = false;
+      updateAuthUI();
+      renderTugasView();
+    }
     showToast('Selamat datang! Anda menjelajah dalam Mode Tamu.');
   });
 
@@ -2331,7 +2345,7 @@ function setGatewayMethodTab(method) {
     $('gatewayLabelUser').textContent = 'Nama Pengguna / ID Pemilik';
     $('gatewayEmailInput').type = 'text';
     $('gatewayEmailInput').placeholder = 'dika';
-    $('gatewayHintBox').innerHTML = '💡 <strong>Master Password Lokal:</strong> Masukkan kata sandi <code>admin123</code> untuk mengelola tugas.';
+    $('gatewayHintBox').innerHTML = '💡 <strong>Master Password Lokal:</strong> Masukkan kata sandi master lokal untuk mengelola tugas.';
   }
 }
 
@@ -2384,9 +2398,7 @@ async function handleGatewayLoginSubmit(e) {
   $('gatewaySubmitText').textContent = 'Memverifikasi...';
 
   try {
-    const isLocalPass = (cleanPass === appState.masterPass || 
-                         noSpacePass === 'admin123' || 
-                         cleanPass === 'admin123' ||
+    const isLocalPass = appState.localLoginEnabled && (cleanPass === appState.masterPass || 
                          noSpacePass === appState.masterPass.replace(/\s+/g, ''));
 
     if (isLocalPass) {
@@ -2443,10 +2455,10 @@ async function handleGatewayLoginSubmit(e) {
       }
     }
 
-    throw new Error('Kata sandi salah. Gunakan sandi lokal: admin123');
+    throw new Error('Email atau kata sandi salah.');
 
   } catch (err) {
-    alert.textContent = err.message || 'Kata sandi salah. Gunakan sandi: admin123';
+    alert.textContent = err.message || 'Email atau kata sandi salah.';
     alert.hidden = false;
     card.classList.add('shake');
     setTimeout(() => card.classList.remove('shake'), 500);
@@ -2484,7 +2496,7 @@ function handleChangePassSubmit(e) {
   const confirmPass = $('confirmNewPassInput').value.trim();
   const alert = $('changePassErrAlert');
 
-  if (oldPass !== appState.masterPass && oldPass !== 'admin123') {
+  if (oldPass !== appState.masterPass) {
     alert.textContent = 'Kata sandi saat ini salah!';
     alert.hidden = false;
     return;
