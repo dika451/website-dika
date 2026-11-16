@@ -1,443 +1,1642 @@
 <!doctype html>
-<html lang="id">
+<html lang="id" data-theme="dark" data-accent="blue">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Dika-Hub</title>
+<meta name="description" content="Dika-Hub Hyper-Cyber — Portal Kuliah SI Web & Mobile Universitas Muhammadiyah Cirebon. Dilengkapi Command Palette Ctrl+K, Audio TTS, Kanban Drag & Drop, dan Dashboard Interaktif.">
+<title>Dika-Hub — Portal Kuliah SI Web & Mobile</title>
+
+<!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Schibsted+Grotesk:wght@500;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap">
+
 <style>
-/* Layout: satu kolom editorial, judul kiri dengan motif tiga ukuran layar,
-   ringkasan angka sebagai baris bergaris, lalu tab Materi / Tugas / Tentang. */
+/* ==========================================================================
+   HYPER-CYBER DESIGN TOKENS & SYSTEM
+   ========================================================================== */
 :root {
-  --bg: #F2F4F7;
-  --surface: #FFFFFF;
-  --fg: #121C27;
-  --muted: #55657A;
-  --line: #D8DEE6;
-  --accent: #1F4FD8;
-  --accent-ink: #FFFFFF;
-  --accent-soft: #E3EAFB;
-  --ok: #17724A;
-  --ok-soft: #DCF2E5;
-  --warn: #8F5400;
-  --warn-soft: #FBEACB;
-  --bad: #B0261C;
-  --bad-soft: #FADFDB;
-  --idle: #55657A;
-  --idle-soft: #E6EAF0;
-  --display: 'Schibsted Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Menlo, Monaco, Consolas, monospace;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 26px;
+  --radius-full: 9999px;
+  --trans-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --trans-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --trans-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Light Theme */
+  --bg-canvas: #F8FAFD;
+  --bg-surface: #FFFFFF;
+  --bg-surface-elevated: #FFFFFF;
+  --bg-surface-subtle: #F1F5F9;
+  --fg-main: #0B132B;
+  --fg-muted: #4B5E76;
+  --fg-subtle: #8494A8;
+  --border-line: #E2E8F0;
+  --border-subtle: #EDF2F7;
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 8px 16px -2px rgb(0 0 0 / 0.08);
+  --shadow-lg: 0 20px 40px -4px rgb(0 0 0 / 0.1);
+  --shadow-glow: 0 0 30px -4px var(--accent-glow);
+
+  /* Status Colors */
+  --status-pending: #64748B;
+  --status-pending-bg: #F1F5F9;
+  --status-progress: #2563EB;
+  --status-progress-bg: #EFF6FF;
+  --status-submitted: #D97706;
+  --status-submitted-bg: #FFFBEB;
+  --status-graded: #059669;
+  --status-graded-bg: #ECFDF5;
+  --status-danger: #EF4444;
+  --status-danger-bg: #FEF2F2;
+
+  /* Accent Preset: Cyber Blue */
+  --accent: #2563EB;
+  --accent-hover: #1D4ED8;
+  --accent-soft: rgba(37, 99, 235, 0.14);
+  --accent-glow: rgba(37, 99, 235, 0.45);
+  --accent-gradient: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
+  --accent-border: rgba(37, 99, 235, 0.35);
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0E141B;
-    --surface: #151D27;
-    --fg: #E6ECF2;
-    --muted: #9AA8B8;
-    --line: #26313D;
-    --accent: #86A5FF;
-    --accent-ink: #0E141B;
-    --accent-soft: #1B2745;
-    --ok: #5FD39A;
-    --ok-soft: #12301F;
-    --warn: #F0B45A;
-    --warn-soft: #33260E;
-    --bad: #FF8F85;
-    --bad-soft: #3A1714;
-    --idle: #9AA8B8;
-    --idle-soft: #212B37;
-    color-scheme: dark;
-  }
-}
+
+/* Dark Theme Overrides */
 :root[data-theme="dark"] {
-  --bg: #0E141B;
-  --surface: #151D27;
-  --fg: #E6ECF2;
-  --muted: #9AA8B8;
-  --line: #26313D;
-  --accent: #86A5FF;
-  --accent-ink: #0E141B;
-  --accent-soft: #1B2745;
-  --ok: #5FD39A;
-  --ok-soft: #12301F;
-  --warn: #F0B45A;
-  --warn-soft: #33260E;
-  --bad: #FF8F85;
-  --bad-soft: #3A1714;
-  --idle: #9AA8B8;
-  --idle-soft: #212B37;
-  color-scheme: dark;
+  --bg-canvas: #070B12;
+  --bg-surface: #0E1624;
+  --bg-surface-elevated: #141F33;
+  --bg-surface-subtle: #192740;
+  --fg-main: #F8FAFC;
+  --fg-muted: #94A3B8;
+  --fg-subtle: #64748B;
+  --border-line: #1D2C47;
+  --border-subtle: #16233B;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.6);
+  --shadow-md: 0 8px 20px -2px rgb(0 0 0 / 0.75);
+  --shadow-lg: 0 24px 48px -4px rgb(0 0 0 / 0.9);
+
+  --status-pending: #94A3B8;
+  --status-pending-bg: #1E293B;
+  --status-progress: #60A5FA;
+  --status-progress-bg: #172554;
+  --status-submitted: #FBBF24;
+  --status-submitted-bg: #451A03;
+  --status-graded: #34D399;
+  --status-graded-bg: #064E3B;
+  --status-danger: #F87171;
+  --status-danger-bg: #450A0A;
 }
 
-* { box-sizing: border-box; }
-[hidden] { display: none !important; }
+/* 6 Cyber Accent Themes */
+:root[data-accent="emerald"] {
+  --accent: #059669; --accent-hover: #047857;
+  --accent-soft: rgba(5, 150, 105, 0.16); --accent-glow: rgba(5, 150, 105, 0.5);
+  --accent-gradient: linear-gradient(135deg, #059669 0%, #10B981 100%);
+  --accent-border: rgba(16, 185, 129, 0.4);
+}
+:root[data-accent="violet"] {
+  --accent: #7C3AED; --accent-hover: #6D28D9;
+  --accent-soft: rgba(124, 58, 237, 0.16); --accent-glow: rgba(124, 58, 237, 0.5);
+  --accent-gradient: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%);
+  --accent-border: rgba(139, 92, 246, 0.4);
+}
+:root[data-accent="amber"] {
+  --accent: #D97706; --accent-hover: #B45309;
+  --accent-soft: rgba(217, 119, 6, 0.16); --accent-glow: rgba(217, 119, 6, 0.5);
+  --accent-gradient: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);
+  --accent-border: rgba(245, 158, 11, 0.4);
+}
+:root[data-accent="rose"] {
+  --accent: #E11D48; --accent-hover: #BE123C;
+  --accent-soft: rgba(225, 29, 72, 0.16); --accent-glow: rgba(225, 29, 72, 0.5);
+  --accent-gradient: linear-gradient(135deg, #E11D48 0%, #F43F5E 100%);
+  --accent-border: rgba(244, 63, 94, 0.4);
+}
+:root[data-accent="cyan"] {
+  --accent: #0891B2; --accent-hover: #0E7490;
+  --accent-soft: rgba(8, 145, 178, 0.16); --accent-glow: rgba(8, 145, 178, 0.5);
+  --accent-gradient: linear-gradient(135deg, #0891B2 0%, #06B6D4 100%);
+  --accent-border: rgba(6, 182, 212, 0.4);
+}
+
+/* Base Reset & Core Styles */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
 body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--fg);
-  font-family: var(--body);
-  font-size: 16px;
-  line-height: 1.55;
-  padding-block: 20px 56px;
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
-  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background-color: var(--bg-canvas);
+  color: var(--fg-main);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  padding-bottom: 90px;
+  position: relative;
+  overflow-x: hidden;
 }
-.wrap { max-width: 60rem; margin-inline: auto; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
-button { font: inherit; color: inherit; cursor: pointer; }
+input, button, textarea, select { font-family: inherit; }
+button { cursor: pointer; border: none; background: none; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+[hidden] { display: none !important; }
 
-.mono { font-family: var(--mono); }
-.eyebrow {
-  font-family: var(--mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
+/* Interactive Canvas Particles Background */
+#ambientCanvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.65;
 }
 
-/* Header */
-.top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
-.theme-btn {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  padding: 6px 12px;
-  font-size: 0.8125rem;
-  min-height: 36px;
+/* Confetti Celebration Canvas */
+#confettiCanvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2000;
 }
-.theme-btn:hover { border-color: var(--accent); }
-.hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-top: 28px; flex-wrap: wrap; }
-.hero-text { min-width: 0; flex: 1 1 22rem; }
-h1 {
-  font-family: var(--display);
-  font-weight: 800;
-  font-size: clamp(2rem, 6.5vw, 3.5rem);
-  line-height: 1.04;
-  letter-spacing: -0.025em;
-  margin: 8px 0 14px;
-  text-wrap: balance;
+
+/* Cyber Grid Texture Overlay */
+.cyber-grid-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: radial-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+  background-size: 28px 28px;
 }
-.lede { color: var(--muted); max-width: 42rem; margin: 0; text-wrap: pretty; }
-.devices { color: var(--accent); flex: 0 0 auto; }
-.devices svg { display: block; max-width: 100%; height: auto; }
-.devices figcaption { font-family: var(--mono); font-size: 0.6875rem; color: var(--muted); letter-spacing: 0.04em; margin-top: 6px; }
-.devices { margin: 0; }
 
-/* Ringkasan */
-.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 0 24px; margin-top: 32px; }
-.stat { border-top: 2px solid var(--fg); padding-top: 10px; padding-bottom: 14px; min-width: 0; }
-.stat-value { font-family: var(--display); font-weight: 700; font-size: 1.75rem; line-height: 1.15; font-variant-numeric: tabular-nums; }
-.stat-value small { font-family: var(--body); font-weight: 400; font-size: 0.875rem; color: var(--muted); }
-.stat-label { font-family: var(--mono); font-size: 0.6875rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
-
-/* Tab */
-.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-top: 20px; overflow-x: auto; }
-.tab {
-  background: none;
-  border: 0;
-  border-bottom: 3px solid transparent;
-  padding: 10px 14px 9px;
-  font-family: var(--display);
-  font-weight: 700;
-  font-size: 1.0625rem;
-  color: var(--muted);
-  white-space: nowrap;
-  margin-bottom: -1px;
-}
-.tab:hover { color: var(--fg); }
-.tab[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); }
-.tab .count { font-family: var(--mono); font-weight: 400; font-size: 0.75rem; color: var(--muted); margin-left: 6px; }
-
-.notice {
-  display: flex; gap: 10px; align-items: baseline;
-  margin: 18px 0 0;
-  padding: 10px 12px;
-  background: var(--warn-soft);
-  color: var(--warn);
-  border-radius: 6px;
-  font-size: 0.875rem;
-}
-.notice .eyebrow { color: inherit; flex: 0 0 auto; }
-
-/* Toolbar */
-.toolbar { display: flex; flex-direction: column; gap: 12px; margin: 22px 0 8px; }
-.search {
+/* Container */
+.container {
   width: 100%;
-  max-width: 26rem;
-  min-height: 42px;
-  padding: 8px 12px;
-  background: var(--surface);
-  color: var(--fg);
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  font: inherit;
+  max-width: 1220px;
+  margin-inline: auto;
+  padding-inline: clamp(16px, 4vw, 32px);
+  position: relative;
+  z-index: 1;
 }
-.search::placeholder { color: var(--muted); }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 4px 12px;
+
+/* Dynamic Spotlight Hover Card Effect */
+.spotlight-card {
+  position: relative;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-line);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition: transform var(--trans-fast), border-color var(--trans-fast), box-shadow var(--trans-fast);
+}
+.spotlight-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(550px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), var(--accent-soft), transparent 40%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+.spotlight-card:hover::before { opacity: 1; }
+.spotlight-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 10px 30px -5px var(--accent-glow);
+}
+
+/* ==========================================================================
+   SITE HEADER & GLOWING BRAND
+   ========================================================================== */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-line);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  transition: all var(--trans-base);
+}
+:root[data-theme="dark"] .site-header {
+  background: rgba(14, 22, 36, 0.9);
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+  gap: 14px;
+}
+.brand-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.brand-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--accent-gradient);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 1.25rem;
+  box-shadow: 0 0 25px var(--accent-glow);
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.brand-logo::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255,255,255,0.35), transparent);
+  transform: rotate(45deg);
+  animation: shineLogo 4s infinite;
+}
+@keyframes shineLogo {
+  0% { transform: translateX(-150%) rotate(45deg); }
+  25%, 100% { transform: translateX(150%) rotate(45deg); }
+}
+
+.brand-info { display: flex; flex-direction: column; min-width: 0; }
+.brand-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--fg-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.brand-badge {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+}
+.brand-sub { font-size: 0.75rem; color: var(--fg-muted); white-space: nowrap; }
+
+/* Header Controls */
+.header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.cyber-icon-btn, .palette-btn, .theme-toggle, .btn-header-auth {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-line);
+  color: var(--fg-main);
   font-size: 0.8125rem;
-  min-height: 32px;
+  font-weight: 600;
+  transition: all var(--trans-fast);
 }
-.chip:hover { border-color: var(--accent); }
-.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.cyber-icon-btn:hover, .palette-btn:hover, .theme-toggle:hover, .btn-header-auth:hover {
+  border-color: var(--accent);
+  background: var(--bg-surface-subtle);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 12px var(--accent-soft);
+}
+.palette-swatch-current {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 10px var(--accent);
+}
+.palette-dropdown-wrap { position: relative; }
+.palette-menu {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  width: 210px; background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-line); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg); padding: 6px; display: flex; flex-direction: column;
+  gap: 2px; z-index: 100; animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.palette-option-btn {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: 8px 10px; border-radius: var(--radius-sm);
+  font-size: 0.8125rem; color: var(--fg-main); transition: background var(--trans-fast);
+}
+.palette-option-btn:hover { background: var(--bg-surface-subtle); }
+.palette-option-btn.active { font-weight: 700; color: var(--accent); }
+.palette-option-left { display: flex; align-items: center; gap: 8px; }
+.palette-swatch { width: 12px; height: 12px; border-radius: 50%; }
 
-/* Materi */
-.list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
-details.item { border-bottom: 1px solid var(--line); }
-details.item > summary {
-  display: grid;
-  grid-template-columns: 3.25rem minmax(0, 1fr) auto;
-  gap: 4px 12px;
-  align-items: baseline;
-  padding: 14px 4px;
+/* Spotlight Search Shortcut Button */
+.btn-spotlight-shortcut {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface-subtle);
+  border: 1px solid var(--border-line);
+  color: var(--fg-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition: all var(--trans-fast);
+}
+.btn-spotlight-shortcut:hover {
+  border-color: var(--accent);
+  color: var(--fg-main);
+  background: var(--bg-surface);
+}
+.kbd-badge {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-line);
+  color: var(--fg-subtle);
+}
+
+.btn-header-auth.glow {
+  background: var(--accent-gradient);
+  color: #FFFFFF;
+  border: none;
+  box-shadow: 0 2px 14px var(--accent-glow);
+}
+.btn-header-auth.glow:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 4px 20px var(--accent-glow);
+}
+
+.profile-pill-wrap { position: relative; }
+.user-profile-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 2px 12px 2px 4px;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface);
+  border: 1px solid var(--accent-border);
+  color: var(--fg-main);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  box-shadow: 0 0 18px -3px var(--accent-glow);
   cursor: pointer;
-  list-style: none;
+  transition: all var(--trans-fast);
 }
-details.item > summary::-webkit-details-marker { display: none; }
-details.item > summary:hover .item-title { color: var(--accent); }
-.item-code { font-family: var(--mono); font-size: 0.8125rem; color: var(--accent); font-weight: 500; }
-.item-title { font-family: var(--display); font-weight: 700; font-size: 1.125rem; line-height: 1.3; min-width: 0; }
-.item-date { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
-.item-meta { grid-column: 2 / 4; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-.tag { font-family: var(--mono); font-size: 0.6875rem; letter-spacing: 0.04em; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 1px 7px; }
-.tag.soon { color: var(--warn); border-color: transparent; background: var(--warn-soft); }
-details.item[data-soon] .item-title { color: var(--muted); }
-.item-body { padding: 2px 4px 20px calc(3.25rem + 16px); max-width: 46rem; }
-.item-body p { margin: 0 0 10px; }
-.item-body ul { margin: 0 0 12px; padding-left: 1.1rem; }
-.item-body li { margin-bottom: 4px; }
-.links { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 0; padding: 0; list-style: none; }
-.links a { color: var(--accent); text-underline-offset: 3px; font-size: 0.9375rem; }
-.empty { padding: 28px 4px; color: var(--muted); }
+.user-profile-pill:hover { border-color: var(--accent); transform: translateY(-1px); }
+.user-avatar-circle {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--accent-gradient); color: #FFFFFF;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.75rem;
+}
+.user-pill-info { display: flex; flex-direction: column; text-align: left; line-height: 1.15; }
+.user-pill-name { font-size: 0.8125rem; font-weight: 700; color: var(--fg-main); }
+.user-pill-role { font-size: 0.6875rem; color: var(--fg-muted); display: flex; align-items: center; gap: 4px; }
+.online-indicator-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: #10B981;
+  box-shadow: 0 0 8px #10B981; animation: pulseDot 2s infinite;
+}
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
 
-/* Tugas */
-.task {
-  display: grid;
-  grid-template-columns: 3.25rem minmax(0, 1fr) 9rem 8rem;
-  gap: 6px 12px;
-  align-items: start;
-  padding: 16px 4px;
-  border-bottom: 1px solid var(--line);
+.profile-menu {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  width: 260px; background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-line); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg); padding: 8px; display: flex; flex-direction: column;
+  gap: 4px; z-index: 100; animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.task-main { min-width: 0; }
-.task-title { font-family: var(--display); font-weight: 700; font-size: 1.125rem; line-height: 1.3; margin: 0 0 2px; }
-.task-desc { margin: 0; color: var(--muted); font-size: 0.9375rem; }
-.task-ref { font-family: var(--mono); font-size: 0.6875rem; color: var(--muted); margin-top: 6px; letter-spacing: 0.04em; }
-.due { font-variant-numeric: tabular-nums; font-size: 0.9375rem; }
-.due small { display: block; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
-.due small.late { color: var(--bad); }
-.due small.near { color: var(--warn); }
-.pill {
-  justify-self: start;
-  font-family: var(--mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.04em;
-  padding: 3px 10px;
-  border-radius: 999px;
-  background: var(--idle-soft);
-  color: var(--idle);
+.profile-menu-header { padding: 10px 12px; border-bottom: 1px solid var(--border-line); margin-bottom: 4px; }
+.profile-menu-user { font-size: 0.875rem; font-weight: 700; color: var(--fg-main); }
+.profile-menu-sub { font-size: 0.75rem; color: var(--fg-muted); word-break: break-all; margin-top: 2px; }
+.profile-menu-item {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  padding: 8px 10px; border-radius: var(--radius-sm); font-size: 0.8125rem;
+  color: var(--fg-main); text-align: left; transition: all var(--trans-fast);
 }
-.pill::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: currentColor; margin-right: 7px; }
-.pill[data-s="dikerjakan"] { background: var(--accent-soft); color: var(--accent); }
-.pill[data-s="dikumpulkan"] { background: var(--warn-soft); color: var(--warn); }
-.pill[data-s="dinilai"] { background: var(--ok-soft); color: var(--ok); }
+.profile-menu-item:hover { background: var(--bg-surface-subtle); color: var(--accent); }
+.profile-menu-item.danger:hover { background: var(--status-danger-bg); color: var(--status-danger); }
 
-/* Tentang */
-.about { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 28px 40px; margin-top: 24px; }
-.about h2 { font-family: var(--display); font-size: 1.125rem; margin: 0 0 10px; }
-.facts { margin: 0; display: grid; grid-template-columns: 7rem minmax(0, 1fr); gap: 8px 12px; }
-.facts dt { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; padding-top: 3px; }
-.facts dd { margin: 0; }
-.steps { margin: 0; padding-left: 1.2rem; }
-.steps li { margin-bottom: 8px; }
-code { font-family: var(--mono); font-size: 0.875em; background: var(--idle-soft); padding: 1px 6px; border-radius: 4px; }
-
-.tools-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
-.btn { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 8px 16px; min-height: 40px; font-size: 0.9375rem; }
-.btn:hover { border-color: var(--accent); }
-.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
-.btn:disabled { opacity: 0.6; cursor: default; }
-.tform { margin: 8px 0 20px; padding: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
-.tform-title { font-family: var(--display); font-size: 1.125rem; margin: 0 0 14px; }
-.fgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 14px; }
-.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.field.wide { grid-column: 1 / -1; }
-.field span { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
-.field input, .field textarea, .field select, .status-select { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; min-height: 40px; width: 100%; }
-.field textarea { resize: vertical; }
-.form-actions { display: flex; gap: 8px; margin-top: 16px; }
-.msg { margin: 10px 0; padding: 8px 12px; border-radius: 6px; background: var(--bad-soft); color: var(--bad); font-size: 0.875rem; }
-.task-actions { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; }
-.link-btn { background: none; border: 0; padding: 2px 0; color: var(--accent); font-size: 0.875rem; text-decoration: underline; text-underline-offset: 3px; }
-.link-btn.danger { color: var(--bad); font-weight: 600; }
-.status-select { width: auto; max-width: 100%; min-height: 36px; padding: 4px 8px; font-size: 0.8125rem; font-family: var(--mono); }
-.status-select[data-s="dikerjakan"] { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
-.status-select[data-s="dikumpulkan"] { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
-.status-select[data-s="dinilai"] { background: var(--ok-soft); color: var(--ok); border-color: transparent; }
-.task-title .tag { margin-left: 8px; vertical-align: middle; font-weight: 400; }
-.flabel { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
-.hint { color: var(--muted); font-size: 0.8125rem; }
-.field input[type="file"] { padding: 6px 8px; }
-.filelist { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
-.filelist li { display: flex; flex-wrap: wrap; gap: 2px 12px; align-items: baseline; font-size: 0.875rem; min-width: 0; overflow-wrap: anywhere; }
-.fsize { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
-.filelinks { margin-top: 8px; }
-.foot { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
-
-@media (max-width: 40rem) {
-  .item-body { padding-left: 4px; }
-  .task { grid-template-columns: 3rem minmax(0, 1fr); }
-  .task .due, .task .pill { grid-column: 2; }
-  .item-date { grid-column: 2; text-align: left; }
-  details.item > summary { grid-template-columns: 3rem minmax(0, 1fr); }
-  .item-meta { grid-column: 2; }
+/* ==========================================================================
+   LINEAR / MAC COMMAND PALETTE (CTRL + K)
+   ========================================================================== */
+.palette-modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding-top: 15vh; z-index: 1500; animation: fadeIn 0.15s ease-out;
 }
-@media (prefers-reduced-motion: no-preference) {
-  .tab, .chip, .theme-btn { transition: color 0.15s, border-color 0.15s, background 0.15s; }
+.command-palette-box {
+  width: 100%; max-width: 600px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-line);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg), 0 0 50px -10px var(--accent-glow);
+  overflow: hidden; display: flex; flex-direction: column;
+  animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.cmd-input-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px; border-bottom: 1px solid var(--border-line);
+}
+.cmd-search-input {
+  flex: 1; height: 36px; background: none; border: none;
+  font-size: 1.05rem; font-weight: 600; color: var(--fg-main);
+}
+.cmd-search-input:focus { outline: none; }
+.cmd-results-list {
+  max-height: 380px; overflow-y: auto; padding: 8px;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.cmd-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; border-radius: var(--radius-sm);
+  font-size: 0.875rem; font-weight: 600; color: var(--fg-main);
+  cursor: pointer; transition: all var(--trans-fast);
+}
+.cmd-item:hover, .cmd-item.selected {
+  background: var(--accent-soft); color: var(--accent);
+}
+.cmd-item-left { display: flex; align-items: center; gap: 10px; }
+.cmd-item-badge {
+  font-family: var(--font-mono); font-size: 0.6875rem;
+  padding: 1px 6px; border-radius: var(--radius-sm);
+  background: var(--bg-surface-subtle); color: var(--fg-muted);
+}
+.cmd-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 18px; border-top: 1px solid var(--border-line);
+  background: var(--bg-surface-subtle); font-size: 0.75rem; color: var(--fg-muted);
+  font-family: var(--font-mono);
+}
+
+/* ==========================================================================
+   FULLSCREEN LOGIN GATEWAY (WITH LASER BEAM BORDER)
+   ========================================================================== */
+.login-gateway-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: var(--bg-canvas); display: flex;
+  align-items: center; justify-content: center;
+  padding: 24px; overflow-y: auto;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.login-gateway-overlay.closing {
+  opacity: 0; transform: scale(0.98); pointer-events: none;
+}
+.login-gateway-backdrop {
+  position: absolute; inset: 0; pointer-events: none;
+  background: 
+    radial-gradient(circle at 15% 15%, var(--accent-soft) 0%, transparent 45%),
+    radial-gradient(circle at 85% 85%, rgba(124, 58, 237, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.06) 0%, transparent 60%);
+}
+.login-card {
+  position: relative; width: 100%; max-width: 480px;
+  background: var(--bg-surface); border: 1px solid var(--border-line);
+  border-radius: var(--radius-xl); box-shadow: var(--shadow-lg), 0 0 60px -10px var(--accent-glow);
+  padding: clamp(26px, 5vw, 38px); display: flex; flex-direction: column;
+  animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+.login-card::after {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--accent-gradient);
+}
+.login-card.shake { animation: shakeBox 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
+@keyframes shakeBox {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.95) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.login-card-header {
+  display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 22px;
+}
+.login-card-logo {
+  width: 62px; height: 62px; border-radius: var(--radius-lg);
+  background: var(--accent-gradient); color: #FFFFFF;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-weight: 800; font-size: 1.8rem;
+  box-shadow: 0 0 30px var(--accent-glow); margin-bottom: 14px;
+}
+.login-card-title {
+  font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; color: var(--fg-main); line-height: 1.2;
+}
+.login-card-badge {
+  font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700;
+  padding: 3px 12px; border-radius: var(--radius-full);
+  background: var(--accent-soft); color: var(--accent); margin-top: 6px;
+  display: inline-block; border: 1px solid var(--accent-border);
+}
+.login-card-desc {
+  font-size: 0.8125rem; color: var(--fg-muted); margin-top: 8px; line-height: 1.5;
+}
+
+.modal-tab-selector {
+  display: flex; background: var(--bg-canvas); border: 1px solid var(--border-line);
+  border-radius: var(--radius-md); padding: 3px; gap: 2px; margin-bottom: 14px;
+}
+.modal-tab-opt {
+  flex: 1; padding: 8px; text-align: center; font-size: 0.8125rem;
+  font-weight: 600; color: var(--fg-muted); border-radius: var(--radius-sm);
+  transition: all var(--trans-fast);
+}
+.modal-tab-opt.active {
+  background: var(--bg-surface); color: var(--accent); box-shadow: var(--shadow-sm);
+}
+
+.login-divider-row {
+  display: flex; align-items: center; gap: 12px; margin: 18px 0 14px;
+  color: var(--fg-subtle); font-size: 0.75rem; text-transform: uppercase;
+  letter-spacing: 0.05em; font-family: var(--font-mono);
+}
+.login-divider-row::before, .login-divider-row::after {
+  content: ""; flex: 1; height: 1px; background: var(--border-line);
+}
+.btn-guest-continue {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; height: 46px; border-radius: var(--radius-md);
+  background: var(--bg-surface-subtle); border: 1px solid var(--border-line);
+  color: var(--fg-main); font-size: 0.875rem; font-weight: 700;
+  transition: all var(--trans-fast);
+}
+.btn-guest-continue:hover {
+  border-color: var(--accent); color: var(--accent);
+  background: var(--accent-soft); transform: translateY(-1px);
+  box-shadow: 0 2px 10px var(--accent-soft);
+}
+
+/* ==========================================================================
+   HERO BANNER & ACADEMIC DASHBOARD
+   ========================================================================== */
+.hero-section { padding-top: 32px; padding-bottom: 24px; }
+.hero-card {
+  background: var(--bg-surface); border: 1px solid var(--border-line);
+  border-radius: var(--radius-xl); padding: clamp(24px, 4vw, 36px);
+  box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+}
+.hero-card::after {
+  content: ""; position: absolute; top: -30%; right: -15%;
+  width: 500px; height: 150%;
+  background: radial-gradient(circle, var(--accent-soft) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-top-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px; margin-bottom: 12px;
+}
+.hero-greeting-badge {
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 14px;
+  border-radius: var(--radius-full); background: var(--accent-soft);
+  color: var(--accent); font-size: 0.8125rem; font-weight: 700;
+  border: 1px solid var(--accent-border);
+}
+.hero-live-clock {
+  font-family: var(--font-mono); font-size: 0.8125rem; font-weight: 600;
+  color: var(--fg-muted); background: var(--bg-canvas);
+  border: 1px solid var(--border-line); padding: 4px 12px; border-radius: var(--radius-full);
+  display: flex; align-items: center; gap: 6px;
+}
+.hero-live-clock span.dot {
+  width: 6px; height: 6px; border-radius: 50%; background: #10B981; animation: pulseDot 1.5s infinite;
+}
+
+.hero-title {
+  font-size: clamp(2.1rem, 5vw, 3.2rem); font-weight: 800; letter-spacing: -0.03em;
+  line-height: 1.15; margin-bottom: 10px; color: var(--fg-main);
+}
+.hero-title span.grad {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-desc {
+  font-size: 1rem; color: var(--fg-muted); max-width: 660px; line-height: 1.6;
+}
+
+/* 4 Interactive KPI Cards */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px; margin-top: 28px;
+}
+.kpi-card {
+  background: var(--bg-canvas); border: 1px solid var(--border-line);
+  border-radius: var(--radius-lg); padding: 18px 20px; display: flex;
+  flex-direction: column; gap: 6px;
+  transition: transform var(--trans-fast), border-color var(--trans-fast), box-shadow var(--trans-fast);
+  position: relative; overflow: hidden;
+}
+.kpi-card:hover {
+  transform: translateY(-2px); border-color: var(--accent);
+  box-shadow: 0 6px 20px var(--accent-soft);
+}
+.kpi-header { display: flex; align-items: center; justify-content: space-between; }
+.kpi-label {
+  font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.05em; color: var(--fg-muted);
+}
+.kpi-icon { font-size: 1.25rem; }
+.kpi-val {
+  font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em;
+  color: var(--fg-main); line-height: 1.2;
+}
+.kpi-sub { font-size: 0.75rem; color: var(--fg-muted); }
+.kpi-progress {
+  height: 6px; width: 100%; background: var(--border-line);
+  border-radius: var(--radius-full); margin-top: 8px; overflow: hidden;
+}
+.kpi-progress-bar {
+  height: 100%; background: var(--accent-gradient); border-radius: var(--radius-full);
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==========================================================================
+   NAVIGATION TABS
+   ========================================================================== */
+.tabs-bar {
+  display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-line);
+  margin-top: 22px; overflow-x: auto; padding-bottom: 2px;
+}
+.tab-btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px;
+  border-bottom: 2px solid transparent; font-size: 0.9375rem; font-weight: 600;
+  color: var(--fg-muted); transition: all var(--trans-fast); white-space: nowrap;
+}
+.tab-btn:hover { color: var(--fg-main); }
+.tab-btn.active {
+  color: var(--accent); border-bottom-color: var(--accent); font-weight: 700;
+}
+.tab-count {
+  font-family: var(--font-mono); font-size: 0.75rem; padding: 2px 7px;
+  border-radius: var(--radius-full); background: var(--bg-surface-subtle); color: var(--fg-muted);
+}
+.tab-btn.active .tab-count { background: var(--accent-soft); color: var(--accent); }
+
+/* ==========================================================================
+   TOOLBARS, SEARCH & CHIPS
+   ========================================================================== */
+.toolbar-wrap { display: flex; flex-direction: column; gap: 12px; margin: 24px 0 16px; }
+.search-input-box { position: relative; max-width: 500px; width: 100%; }
+.search-icon-svg {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  color: var(--fg-subtle); pointer-events: none;
+}
+.search-field {
+  width: 100%; height: 44px; padding-left: 42px; padding-right: 70px;
+  border-radius: var(--radius-md); border: 1px solid var(--border-line);
+  background: var(--bg-surface); color: var(--fg-main); font-size: 0.9375rem;
+  transition: all var(--trans-fast);
+}
+.search-field:focus {
+  outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.search-kbd-hint {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  font-family: var(--font-mono); font-size: 0.6875rem; padding: 2px 6px;
+  border-radius: var(--radius-sm); background: var(--bg-surface-subtle);
+  color: var(--fg-subtle); border: 1px solid var(--border-line); pointer-events: none;
+}
+.chips-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip-btn {
+  padding: 6px 14px; border-radius: var(--radius-full); background: var(--bg-surface);
+  border: 1px solid var(--border-line); color: var(--fg-muted); font-size: 0.8125rem;
+  font-weight: 500; transition: all var(--trans-fast);
+}
+.chip-btn:hover { border-color: var(--accent); color: var(--fg-main); }
+.chip-btn.active {
+  background: var(--accent); border-color: var(--accent); color: #FFFFFF;
+  font-weight: 600; box-shadow: 0 2px 8px var(--accent-glow);
+}
+
+/* ==========================================================================
+   MATERI KULIAH (16 PERTEMUAN WITH TTS & CHECKLIST)
+   ========================================================================== */
+.materi-list { display: flex; flex-direction: column; gap: 12px; }
+.materi-card {
+  background: var(--bg-surface); border: 1px solid var(--border-line);
+  border-radius: var(--radius-lg); overflow: hidden;
+  transition: border-color var(--trans-fast), box-shadow var(--trans-fast);
+}
+.materi-card:hover { border-color: var(--accent-border); box-shadow: var(--shadow-sm); }
+.materi-card.studied {
+  border-color: var(--status-graded); background: var(--status-graded-bg);
+}
+.materi-summary {
+  display: grid; grid-template-columns: 36px 50px 1fr auto; gap: 12px;
+  align-items: center; padding: 16px 20px; cursor: pointer; user-select: none;
+}
+.study-checkbox { width: 20px; height: 20px; accent-color: var(--status-graded); cursor: pointer; }
+.materi-code-badge {
+  font-family: var(--font-mono); font-weight: 700; font-size: 0.875rem;
+  padding: 4px 8px; border-radius: var(--radius-sm); background: var(--accent-soft);
+  color: var(--accent); text-align: center;
+}
+.materi-header-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.materi-title { font-size: 1.05rem; font-weight: 700; color: var(--fg-main); line-height: 1.3; }
+.materi-meta-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.tag-badge {
+  font-family: var(--font-mono); font-size: 0.6875rem; padding: 2px 7px;
+  border-radius: var(--radius-sm); background: var(--bg-surface-subtle); color: var(--fg-muted);
+}
+.tag-badge.eval {
+  background: var(--status-submitted-bg); color: var(--status-submitted); font-weight: 700;
+  border: 1px solid var(--status-submitted);
+}
+.tag-badge.studied-badge {
+  background: var(--status-graded); color: #FFFFFF; font-weight: 700;
+}
+.materi-date-text {
+  font-family: var(--font-mono); font-size: 0.75rem; color: var(--fg-muted); white-space: nowrap;
+}
+.materi-card-body {
+  padding: 0 20px 20px 98px; border-top: 1px solid var(--border-subtle);
+  margin-top: 4px; padding-top: 16px;
+}
+.materi-ringkas { font-size: 0.9375rem; color: var(--fg-muted); margin-bottom: 12px; }
+.materi-poin-list {
+  padding-left: 20px; font-size: 0.875rem; color: var(--fg-main);
+  display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px;
+}
+.materi-actions-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.resource-link-btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px;
+  border-radius: var(--radius-sm); background: var(--bg-surface-subtle);
+  border: 1px solid var(--border-line); font-size: 0.8125rem; color: var(--accent);
+  font-weight: 600; transition: all var(--trans-fast);
+}
+.resource-link-btn:hover {
+  background: var(--accent-soft); text-decoration: none; transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   TUGAS KULIAH (DRAG & DROP KANBAN BOARD)
+   ========================================================================== */
+.tugas-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap; margin: 24px 0 16px;
+}
+.tugas-controls-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.view-switch-box {
+  display: inline-flex; background: var(--bg-surface); border: 1px solid var(--border-line);
+  border-radius: var(--radius-md); padding: 3px; gap: 2px;
+}
+.view-btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+  border-radius: var(--radius-sm); font-size: 0.8125rem; font-weight: 600;
+  color: var(--fg-muted); transition: all var(--trans-fast);
+}
+.view-btn.active { background: var(--accent); color: #FFFFFF; }
+.btn-primary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 44px; padding: 0 18px; border-radius: var(--radius-md);
+  background: var(--accent-gradient); color: #FFFFFF; font-size: 0.875rem;
+  font-weight: 700; box-shadow: 0 2px 10px var(--accent-glow); transition: all var(--trans-fast);
+}
+.btn-primary:hover {
+  transform: translateY(-1px); box-shadow: 0 4px 18px var(--accent-glow);
+}
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+/* List View */
+.tugas-list-view { display: flex; flex-direction: column; gap: 10px; }
+.task-row-card {
+  display: grid; grid-template-columns: 50px 1fr 140px 130px; gap: 16px;
+  align-items: center; background: var(--bg-surface); border: 1px solid var(--border-line);
+  border-radius: var(--radius-lg); padding: 16px 20px; transition: all var(--trans-fast);
+}
+.task-row-card:hover { border-color: var(--accent); box-shadow: var(--shadow-sm); }
+.task-code-badge {
+  font-family: var(--font-mono); font-weight: 700; font-size: 0.8125rem;
+  padding: 4px 8px; border-radius: var(--radius-sm); background: var(--bg-surface-subtle);
+  color: var(--fg-muted); text-align: center;
+}
+.task-main-col { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.task-title-line { font-size: 1rem; font-weight: 700; color: var(--fg-main); }
+.task-desc-line { font-size: 0.875rem; color: var(--fg-muted); }
+.task-sub-meta { display: flex; align-items: center; gap: 12px; font-size: 0.75rem; color: var(--fg-subtle); margin-top: 4px; }
+.task-deadline-col { font-size: 0.875rem; color: var(--fg-main); text-align: right; line-height: 1.3; }
+.task-deadline-col small { display: block; font-family: var(--font-mono); font-size: 0.75rem; color: var(--fg-muted); }
+.task-deadline-col small.near { color: var(--status-submitted); font-weight: 600; }
+.task-deadline-col small.late { color: var(--status-danger); font-weight: 700; }
+.task-status-col { display: flex; justify-content: flex-end; }
+.status-pill {
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px;
+  border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 600; font-family: var(--font-mono);
+}
+.status-pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.status-pill[data-s="belum"] { background: var(--status-pending-bg); color: var(--status-pending); }
+.status-pill[data-s="dikerjakan"] { background: var(--status-progress-bg); color: var(--status-progress); }
+.status-pill[data-s="dikumpulkan"] { background: var(--status-submitted-bg); color: var(--status-submitted); }
+.status-pill[data-s="dinilai"] { background: var(--status-graded-bg); color: var(--status-graded); }
+
+.task-actions-row { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+.action-link { font-size: 0.8125rem; font-weight: 600; color: var(--accent); background: none; border: none; cursor: pointer; padding: 0; }
+.action-link:hover { text-decoration: underline; }
+.action-link.danger { color: var(--status-danger); }
+
+/* Kanban Drag & Drop View */
+.kanban-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.kanban-col {
+  background: var(--bg-surface); border: 1px solid var(--border-line);
+  border-radius: var(--radius-lg); padding: 16px; display: flex; flex-direction: column;
+  gap: 12px; min-height: 480px; transition: background var(--trans-fast), border-color var(--trans-fast);
+}
+.kanban-col.drag-over { background: var(--accent-soft); border-color: var(--accent); }
+.kanban-col-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle);
+}
+.kanban-col-title { font-size: 0.875rem; font-weight: 700; color: var(--fg-main); display: flex; align-items: center; gap: 6px; }
+.kanban-badge {
+  font-family: var(--font-mono); font-size: 0.75rem; padding: 1px 7px;
+  border-radius: var(--radius-full); background: var(--bg-surface-subtle); color: var(--fg-muted);
+}
+.kanban-cards-box { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.kanban-card {
+  background: var(--bg-canvas); border: 1px solid var(--border-line);
+  border-radius: var(--radius-md); padding: 14px; display: flex; flex-direction: column;
+  gap: 8px; cursor: grab; transition: transform var(--trans-fast), border-color var(--trans-fast), box-shadow var(--trans-fast);
+}
+.kanban-card:hover {
+  transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 4px 14px var(--accent-soft);
+}
+.kanban-card.dragging { opacity: 0.4; transform: scale(0.95); }
+.kanban-card-title { font-size: 0.875rem; font-weight: 700; color: var(--fg-main); line-height: 1.3; }
+.kanban-card-desc {
+  font-size: 0.8125rem; color: var(--fg-muted); line-height: 1.4;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.kanban-card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 6px; font-size: 0.75rem; color: var(--fg-muted); font-family: var(--font-mono);
+}
+
+/* ==========================================================================
+   TENTANG & PROFIL HOLOGRAFIS
+   ========================================================================== */
+.about-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-top: 24px; }
+.about-card {
+  background: var(--bg-surface); border: 1px solid var(--border-line);
+  border-radius: var(--radius-xl); padding: 24px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+}
+.about-title {
+  font-size: 1.15rem; font-weight: 800; color: var(--fg-main); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+}
+.facts-list { display: grid; grid-template-columns: 120px 1fr; gap: 10px 14px; font-size: 0.875rem; }
+.facts-dt { font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; color: var(--fg-muted); }
+.facts-dd { font-weight: 600; color: var(--fg-main); }
+
+.skill-bar-wrap { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+.skill-item { display: flex; flex-direction: column; gap: 4px; font-size: 0.8125rem; font-weight: 600; }
+.skill-meta { display: flex; justify-content: space-between; }
+.skill-track { height: 6px; background: var(--border-line); border-radius: var(--radius-full); overflow: hidden; }
+.skill-fill { height: 100%; background: var(--accent-gradient); border-radius: var(--radius-full); }
+
+/* ==========================================================================
+   FLOATING TOOLS: QUICK NOTES SCRATCHPAD & POMODORO TIMER
+   ========================================================================== */
+.floating-notes-btn {
+  position: fixed; bottom: 24px; left: 24px; z-index: 90;
+  height: 44px; padding: 0 16px; border-radius: var(--radius-full);
+  background: var(--bg-surface-elevated); border: 1px solid var(--accent-border);
+  color: var(--fg-main); font-size: 0.875rem; font-weight: 700;
+  box-shadow: var(--shadow-lg), 0 0 20px var(--accent-glow);
+  display: flex; align-items: center; gap: 8px; transition: all var(--trans-fast);
+}
+.floating-notes-btn:hover {
+  transform: translateY(-2px) scale(1.02); border-color: var(--accent);
+}
+
+.notes-drawer {
+  position: fixed; bottom: 80px; left: 24px; width: 330px;
+  background: var(--bg-surface-elevated); border: 1px solid var(--border-line);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: 16px;
+  z-index: 95; display: flex; flex-direction: column; gap: 10px; animation: popIn 0.25s ease-out;
+}
+.notes-header { display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 0.875rem; }
+.notes-textarea {
+  width: 100%; height: 160px; background: var(--bg-canvas);
+  border: 1px solid var(--border-line); border-radius: var(--radius-sm);
+  padding: 10px; font-size: 0.8125rem; color: var(--fg-main); resize: none;
+}
+.notes-textarea:focus { outline: none; border-color: var(--accent); }
+
+/* Pomodoro Modal */
+.pomo-card { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.pomo-timer-display {
+  font-family: var(--font-mono); font-size: 3.5rem; font-weight: 800; color: var(--fg-main); letter-spacing: -0.02em;
+}
+.pomo-controls { display: flex; gap: 10px; }
+
+/* TOAST NOTIFICATION */
+.toast-container {
+  position: fixed; bottom: 24px; right: 24px; z-index: 1200;
+  display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+}
+.toast-msg {
+  pointer-events: auto; padding: 12px 18px; border-radius: var(--radius-md);
+  background: var(--bg-surface-elevated); border: 1px solid var(--border-line);
+  color: var(--fg-main); box-shadow: var(--shadow-lg); font-size: 0.875rem; font-weight: 600;
+  display: flex; align-items: center; gap: 10px; animation: slideUp 0.25s ease-out;
+}
+@keyframes slideUp { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* Modals */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; z-index: 200; animation: fadeIn 0.2s ease-out;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.modal-box {
+  width: 100%; max-width: 480px; background: var(--bg-surface);
+  border: 1px solid var(--border-line); border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg), 0 0 35px -5px var(--accent-glow);
+  overflow: hidden; display: flex; flex-direction: column;
+  animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 24px; border-bottom: 1px solid var(--border-line);
+}
+.modal-title-area { display: flex; align-items: center; gap: 10px; }
+.modal-icon-badge {
+  width: 36px; height: 36px; border-radius: var(--radius-md);
+  background: var(--accent-soft); color: var(--accent);
+  display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+}
+.modal-title { font-size: 1.125rem; font-weight: 800; color: var(--fg-main); }
+.modal-close-btn { color: var(--fg-subtle); font-size: 1.25rem; line-height: 1; padding: 6px; border-radius: var(--radius-sm); }
+.modal-close-btn:hover { color: var(--fg-main); background: var(--bg-surface-subtle); }
+.modal-body { padding: 24px; max-height: 80vh; overflow-y: auto; }
+.modal-footer {
+  padding: 16px 24px; border-top: 1px solid var(--border-line);
+  background: var(--bg-surface-subtle); display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+}
+
+.form-grid { display: flex; flex-direction: column; gap: 16px; }
+.input-label { display: flex; flex-direction: column; gap: 6px; font-size: 0.8125rem; font-weight: 600; color: var(--fg-main); }
+.input-label span { font-family: var(--font-mono); font-size: 0.6875rem; text-transform: uppercase; color: var(--fg-muted); }
+.text-input, .select-input, .textarea-input {
+  width: 100%; height: 42px; padding: 0 12px; border-radius: var(--radius-md);
+  border: 1px solid var(--border-line); background: var(--bg-canvas);
+  color: var(--fg-main); font-size: 0.875rem; transition: all var(--trans-fast);
+}
+.text-input:focus, .select-input:focus, .textarea-input:focus {
+  outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.textarea-input { height: 80px; padding: 10px 12px; resize: vertical; }
+
+.password-field-wrapper { position: relative; width: 100%; display: flex; align-items: center; }
+.password-field-wrapper .text-input { padding-right: 44px; }
+.toggle-password-btn {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  color: var(--fg-muted); border-radius: var(--radius-sm);
+}
+.toggle-password-btn:hover { color: var(--fg-main); background: var(--bg-surface-subtle); }
+.toggle-password-btn svg { width: 18px; height: 18px; }
+
+.caps-lock-warning {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem;
+  color: var(--status-submitted); margin-top: 4px; font-weight: 600;
+}
+.login-hint-box {
+  background: var(--bg-canvas); border: 1px solid var(--border-line);
+  border-radius: var(--radius-md); padding: 10px 14px; font-size: 0.75rem;
+  color: var(--fg-muted); line-height: 1.5;
+}
+.hint-quick-btn { display: inline-block; margin-top: 4px; color: var(--accent); font-weight: 600; text-decoration: underline; cursor: pointer; }
+
+@media (max-width: 860px) {
+  .task-row-card { grid-template-columns: 44px 1fr; gap: 12px; }
+  .task-deadline-col, .task-status-col { grid-column: 2; text-align: left; justify-content: flex-start; }
+  .kanban-grid { grid-template-columns: 1fr; }
+  .materi-summary { grid-template-columns: 32px 44px 1fr auto; }
+  .materi-card-body { padding-left: 20px; }
+  .floating-notes-btn { bottom: 16px; left: 16px; }
+  .notes-drawer { bottom: 70px; left: 16px; width: calc(100vw - 32px); }
+}
+@media (max-width: 580px) {
+  .brand-sub { display: none; }
+  .user-pill-info { display: none; }
+  .hero-card { padding: 20px; }
+  .login-card { padding: 22px 18px; }
+}
+
+/* ===== Upload Berkas Tugas (PDF / Word / PPT) ===== */
+.upload-zone{border:1.5px dashed var(--border-line);border-radius:var(--radius-md);padding:16px;text-align:center;background:var(--bg-surface-subtle);color:var(--fg-muted);font-size:.8125rem;cursor:pointer;transition:all var(--trans-fast)}
+.upload-zone:hover,.upload-zone:focus-visible,.upload-zone.drag{border-color:var(--accent);background:var(--accent-soft);color:var(--fg-main);outline:none}
+.upload-zone small{display:block;color:var(--fg-subtle);margin-top:4px}
+.upload-hint{font-size:.6875rem;color:var(--fg-subtle);margin-top:6px}
+.file-list{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.file-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--border-line);border-radius:var(--radius-sm);background:var(--bg-surface);font-size:.8125rem}
+.file-item .fi-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-item .fi-size{color:var(--fg-subtle);font-family:var(--font-mono);font-size:.6875rem;white-space:nowrap}
+.file-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.file-chip{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:4px 10px;border:1px solid var(--accent-border);border-radius:var(--radius-full);background:var(--accent-soft);color:var(--fg-main);font-size:.75rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:all var(--trans-fast)}
+.file-chip:hover{background:var(--accent);color:#fff}
 </style>
 </head>
 <body>
 
+<!-- Ambient Particles Canvas -->
+<canvas id="ambientCanvas"></canvas>
+<!-- Confetti Canvas -->
+<canvas id="confettiCanvas"></canvas>
+<div class="cyber-grid-overlay"></div>
 
-<div class="wrap">
-  <header>
-    <div class="top">
-      <span class="eyebrow" id="eyebrow"></span>
-      <button class="theme-btn" id="themeBtn" type="button">Mode gelap</button>
+<!-- ==========================================================================
+     HALAMAN LOGIN GATEWAY
+     ========================================================================== -->
+<div class="login-gateway-overlay" id="loginGatewayOverlay">
+  <div class="login-gateway-backdrop"></div>
+  
+  <div class="login-card" id="gatewayLoginCard">
+    <div class="login-card-header">
+      <div class="login-card-logo">DH</div>
+      <h1 class="login-card-title">Dika-Hub</h1>
+      <span class="login-card-badge">Portal Kuliah SI Web & Mobile</span>
+      <p class="login-card-desc">
+        Universitas Muhammadiyah Cirebon · TI24D<br>
+        Masuk sebagai pemilik untuk mengelola tugas dan materi, atau lanjutkan sebagai tamu untuk melihat materi kuliah.
+      </p>
     </div>
-    <div class="hero">
-      <div class="hero-text">
-        <h1 id="judul"></h1>
-        <p class="lede" id="lede"></p>
-      </div>
-      <figure class="devices" aria-hidden="true">
-        <svg width="132" height="64" viewBox="0 0 132 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
-          <rect x="2" y="4" width="66" height="42" rx="3"/>
-          <path d="M26 58h18M35 46v12"/>
-          <rect x="76" y="16" width="30" height="40" rx="4"/>
-          <path d="M88 51h6"/>
-          <rect x="112" y="26" width="16" height="30" rx="3"/>
-          <path d="M118 51h4"/>
-        </svg>
-        <figcaption>1280 · 768 · 360 px</figcaption>
-      </figure>
+
+    <!-- Auth Method Selector Tabs -->
+    <div class="modal-tab-selector">
+      <button type="button" class="modal-tab-opt active" id="tabGatewayLocal">Master Password Lokal</button>
+      <button type="button" class="modal-tab-opt" id="tabGatewaySupa">Cloud Supabase</button>
     </div>
-  </header>
 
-  <section class="stats" aria-label="Ringkasan">
-    <div class="stat"><div class="stat-label">Materi terbit</div><div class="stat-value" id="sMateri"></div></div>
-    <div class="stat"><div class="stat-label">Tugas selesai</div><div class="stat-value" id="sTugas"></div></div>
-    <div class="stat"><div class="stat-label">Tenggat terdekat</div><div class="stat-value" id="sTenggat"></div></div>
-  </section>
+    <form id="gatewayLoginForm" novalidate>
+      <div class="form-grid">
+        <label class="input-label" for="gatewayEmailInput">
+          <span id="gatewayLabelUser">Nama Pengguna / ID Pemilik</span>
+          <input class="text-input" type="text" id="gatewayEmailInput" required autocomplete="username" placeholder="dika" value="dika">
+        </label>
 
-  <div class="tabs" role="tablist" aria-label="Bagian situs">
-    <button class="tab" role="tab" id="tab-materi" aria-controls="panel-materi" data-tab="materi" type="button">Materi<span class="count" id="cMateri"></span></button>
-    <button class="tab" role="tab" id="tab-tugas" aria-controls="panel-tugas" data-tab="tugas" type="button">Tugas<span class="count" id="cTugas"></span></button>
-    <button class="tab" role="tab" id="tab-tentang" aria-controls="panel-tentang" data-tab="tentang" type="button">Tentang</button>
-  </div>
-
-  <p class="notice" id="notice" hidden><span class="eyebrow"></span><span>"Selamat datang di Portal Perkuliahan Dika. Silakan pilih tab 'Materi' untuk melihat daftar pertemuan, atau tab 'Tugas' untuk melihat daftar tugas yang harus diselesaikan.".</span></p>
-
-  <main>
-    <section id="panel-materi" role="tabpanel" aria-labelledby="tab-materi" hidden>
-      <div class="toolbar">
-        <input class="search" id="q" type="search" placeholder="Cari materi, mis. REST, ERD, Flutter" aria-label="Cari materi" autocomplete="off">
-        <div class="chips" id="tagChips" role="group" aria-label="Filter topik"></div>
-      </div>
-      <div id="materiList"></div>
-    </section>
-
-    <section id="panel-tugas" role="tabpanel" aria-labelledby="tab-tugas" hidden>
-      <div class="toolbar">
-        <div class="chips" id="statusChips" role="group" aria-label="Filter status"></div>
-        <div class="tools-row">
-          <button class="btn primary" id="addBtn" type="button" hidden>Tambah tugas</button>
-          <button class="btn" id="authBtn" type="button" hidden>Masuk pemilik</button>
-          <span class="eyebrow" id="storeNote"></span>
-        </div>
-      </div>
-      <form class="tform" id="loginForm" hidden novalidate>
-        <h3 class="tform-title">Masuk sebagai pemilik</h3>
-        <div class="fgrid">
-          <label class="field" for="l-email"><span>Email</span><input id="l-email" type="email" autocomplete="username"></label>
-          <label class="field" for="l-pass"><span>Kata sandi</span><input id="l-pass" type="password" autocomplete="current-password"></label>
-        </div>
-        <p class="msg" id="loginErr" role="alert" hidden></p>
-        <div class="form-actions">
-          <button class="btn primary" type="submit" id="loginSubmit">Masuk</button>
-          <button class="btn" type="button" id="loginCancel">Batal</button>
-        </div>
-      </form>
-      <form class="tform" id="tugasForm" hidden novalidate>
-        <h3 class="tform-title" id="formTitle">Tambah tugas</h3>
-        <div class="fgrid">
-          <label class="field wide" for="f-judul"><span>Judul tugas</span><input id="f-judul" type="text" maxlength="120" required></label>
-          <label class="field wide" for="f-deskripsi"><span>Deskripsi</span><textarea id="f-deskripsi" rows="2" maxlength="400"></textarea></label>
-          <label class="field" for="f-tenggat"><span>Tenggat</span><input id="f-tenggat" type="date" required></label>
-          <label class="field" for="f-status"><span>Status</span><select id="f-status"></select></label>
-          <label class="field" for="f-pertemuan"><span>Terkait pertemuan</span><input id="f-pertemuan" type="text" maxlength="40" placeholder="mis. P05"></label>
-          <label class="field" for="f-kode"><span>Kode</span><input id="f-kode" type="text" maxlength="8" placeholder="otomatis, mis. T8"></label>
-          <label class="field wide" for="f-tautan"><span>Tautan berkas (Google Drive, GitHub, dan sejenisnya)</span><input id="f-tautan" type="url" maxlength="300" placeholder="https://"></label>
-          <div class="field wide" id="fileBox" hidden>
-            
-          <label class="flabel" for="f-berkas">Unggah berkas</label>
-          <input
-            id="f-berkas"
-            type="file"
-            multiple
-            accept=".pdf,.docx,.pptx,.zip,.png,.jpg,.jpeg,.gif,.webp,.mp4,.webm,.txt,.md,.csv,.json"
-          >
-          <span class="hint" id="fileHint">
-            PDF, Word (DOCX), PowerPoint (PPTX), ZIP, gambar, video, atau teks.
-            Maksimal 20 MB per berkas.
-          </span>
-          <ul class="filelist" id="fileList"></ul>
+        <label class="input-label" for="gatewayPasswordInput">
+          <span>Kata Sandi</span>
+          <div class="password-field-wrapper">
+            <input class="text-input" type="password" id="gatewayPasswordInput" required autocomplete="current-password" placeholder="admin123">
+            <button class="toggle-password-btn" type="button" id="toggleGatewayPassBtn" title="Tampilkan / Sembunyikan Sandi">
+              <svg id="gatewayEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
           </div>
+          <div class="caps-lock-warning" id="gatewayCapsLockWarning" hidden>
+            <span>⚠️</span> Caps Lock sedang aktif!
+          </div>
+        </label>
 
-        </div>
-        <p class="msg" id="formErr" role="alert" hidden></p>
-        <div class="form-actions">
-          <button class="btn primary" type="submit" id="saveBtn">Simpan</button>
-          <button class="btn" type="button" id="cancelBtn">Batal</button>
-        </div>
-      </form>
-      <p class="msg" id="tugasMsg" role="status" hidden></p>
-      <div id="tugasList"></div>
-    </section>
+        <label style="display:flex; align-items:center; gap:8px; font-size:0.8125rem; color:var(--fg-muted); cursor:pointer;">
+          <input type="checkbox" id="gatewayRememberMe" checked style="accent-color:var(--accent); width:16px; height:16px;">
+          <span>Ingat sesi masuk di perangkat ini</span>
+        </label>
 
-    <section id="panel-tentang" role="tabpanel" aria-labelledby="tab-tentang" hidden>
-      <div class="about">
-        <div>
-          <h2>Pemilik situs</h2>
-          <dl class="facts" id="facts"></dl>
-        </div>
-        <div>
-          <h2>Cara memperbarui isi</h2>
-          <ol class="steps">
-            <li>Tugas: buka tab Tugas, tekan <strong>Tambah tugas</strong>, lalu ubah status lewat menu di tiap baris. Perubahan tersimpan otomatis.</li>
-            <li>Materi: cari objek <code>DATA</code> di bagian skrip, lalu tambah satu blok pada daftar <code>materi</code> setiap selesai pertemuan.</li>
-            <li>Simpan berkas, lalu publish atau unggah ulang. Tugas yang sudah dicatat tidak ikut hilang.</li>
-          </ol>
+        <div id="gatewayErrorAlert" style="color:var(--status-danger); font-size:0.8125rem; background:var(--status-danger-bg); padding:8px 12px; border-radius:var(--radius-sm); border:1px solid currentColor;" hidden></div>
+
+        <button class="btn-primary" id="gatewaySubmitBtn" type="submit" style="width:100%; height:46px;">
+          <span id="gatewaySubmitText">🔐 Masuk Sebagai Pemilik</span>
+        </button>
+
+        <div class="login-hint-box" id="gatewayHintBox">
+          💡 <strong>Akses Cepat:</strong> Masukkan kata sandi <code>admin123</code> untuk mengelola seluruh data tugas.
+          <br>
+          <span class="hint-quick-btn" id="btnGatewayQuickFill">👉 Klik di sini untuk isi otomatis (Uji Coba)</span>
         </div>
       </div>
-    </section>
-  </main>
+    </form>
 
-  <footer class="foot" id="foot"></footer>
+    <div class="login-divider-row"><span>Atau Eksplorasi Sekarang</span></div>
+
+    <button class="btn-guest-continue" id="btnContinueAsGuest" type="button">
+      <span>👀 Lanjut Sebagai Tamu (Lihat Materi & Tugas)</span>
+      <span style="font-size:1.15rem; margin-left:auto;">→</span>
+    </button>
+  </div>
 </div>
 
+<!-- ==========================================================================
+     HALAMAN UTAMA (SITE HEADER & DASHBOARD)
+     ========================================================================== -->
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="brand-group">
+      <div class="brand-logo">DH</div>
+      <div class="brand-info">
+        <div class="brand-title">
+          <span>Dika-Hub</span>
+          <span class="brand-badge">SI Web & Mobile</span>
+        </div>
+        <span class="brand-sub">Universitas Muhammadiyah Cirebon · TI24D</span>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <!-- Command Palette Shortcut Button -->
+      <button class="btn-spotlight-shortcut" id="btnOpenCommandPalette" type="button" title="Buka Command Palette">
+        <span>🔍 Cari...</span>
+        <span class="kbd-badge">Ctrl K</span>
+      </button>
+
+      <!-- Sound FX Toggle -->
+      <button class="cyber-icon-btn" id="soundToggleBtn" type="button" title="Efek Suara Cyber (Aktif/Mati)">
+        <span id="soundIcon">🔊</span>
+      </button>
+
+      <!-- Pomodoro Study Timer -->
+      <button class="cyber-icon-btn" id="openPomodoroBtn" type="button" title="Timer Fokus Belajar (Pomodoro)">
+        <span>⏱️</span>
+      </button>
+
+      <!-- Accent Palette Dropdown -->
+      <div class="palette-dropdown-wrap">
+        <button class="palette-btn" id="paletteBtn" type="button" title="Pilih Tema Warna">
+          <span class="palette-swatch-current"></span>
+          <span id="paletteLabel">Blue</span>
+        </button>
+        <div class="palette-menu" id="paletteMenu" hidden>
+          <button type="button" class="palette-option-btn active" data-accent-val="blue">
+            <span class="palette-option-left"><span class="palette-swatch" style="background:#2563EB;"></span>Cyber Blue</span>
+            <span>✓</span>
+          </button>
+          <button type="button" class="palette-option-btn" data-accent-val="emerald">
+            <span class="palette-option-left"><span class="palette-swatch" style="background:#059669;"></span>Matrix Emerald</span>
+            <span hidden>✓</span>
+          </button>
+          <button type="button" class="palette-option-btn" data-accent-val="violet">
+            <span class="palette-option-left"><span class="palette-swatch" style="background:#7C3AED;"></span>Neon Violet</span>
+            <span hidden>✓</span>
+          </button>
+          <button type="button" class="palette-option-btn" data-accent-val="cyan">
+            <span class="palette-option-left"><span class="palette-swatch" style="background:#0891B2;"></span>Cyan Horizon</span>
+            <span hidden>✓</span>
+          </button>
+          <button type="button" class="palette-option-btn" data-accent-val="amber">
+            <span class="palette-option-left"><span class="palette-swatch" style="background:#D97706;"></span>Sunset Amber</span>
+            <span hidden>✓</span>
+          </button>
+          <button type="button" class="palette-option-btn" data-accent-val="rose">
+            <span class="palette-option-left"><span class="palette-swatch" style="background:#E11D48;"></span>Crimson Rose</span>
+            <span hidden>✓</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Theme Switcher -->
+      <button class="theme-toggle" id="themeToggleBtn" type="button" title="Ganti Mode Gelap / Terang">
+        <span id="themeIcon">🌙</span>
+        <span id="themeLabel">Gelap</span>
+      </button>
+
+      <!-- Auth Section -->
+      <button class="btn-header-auth glow" id="btnHeaderLogin" type="button">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span>Masuk / Login</span>
+      </button>
+
+      <div class="profile-pill-wrap" id="profilePillWrap" hidden>
+        <button class="user-profile-pill" id="userProfileBtn" type="button">
+          <div class="user-avatar-circle" id="userAvatarText">D</div>
+          <div class="user-pill-info">
+            <div class="user-pill-name" id="userDisplayName">Dika</div>
+            <div class="user-pill-role">
+              <span class="online-indicator-dot"></span>
+              <span id="userRoleBadge">Pemilik</span>
+            </div>
+          </div>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+        </button>
+
+        <div class="profile-menu" id="profileMenu" hidden>
+          <div class="profile-menu-header">
+            <div class="profile-menu-user" id="profileMenuName">Dika Arya Saputra</div>
+            <div class="profile-menu-sub" id="profileMenuEmail">dikaaryasaputra865@gmail.com</div>
+          </div>
+          <button class="profile-menu-item" id="menuActionAddTask" type="button">
+            <span>➕</span> Tambah Tugas Baru
+          </button>
+          <button class="profile-menu-item" id="menuActionChangePass" type="button">
+            <span>🔑</span> Ganti Kata Sandi
+          </button>
+          <button class="profile-menu-item" id="menuActionLockPortal" type="button">
+            <span>🔒</span> Kunci Halaman Portal
+          </button>
+          <button class="profile-menu-item" id="menuActionExportJson" type="button">
+            <span>💾</span> Ekspor Cadangan (JSON)
+          </button>
+          <button class="profile-menu-item danger" id="menuActionLogout" type="button">
+            <span>🚪</span> Keluar (Logout)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <!-- CYBER HERO BANNER & KPI DASHBOARD -->
+  <section class="hero-section">
+    <div class="hero-card spotlight-card" id="heroSpotlightCard">
+      <div class="hero-top-bar">
+        <div class="hero-greeting-badge" id="heroGreetingBadge">
+          <span>👋</span> <span id="heroGreetingText">Selamat Datang di Dika-Hub</span>
+        </div>
+        <div class="hero-live-clock" id="heroLiveClock">
+          <span class="dot"></span>
+          <span id="clockTimeStr">00:00:00 WIB</span>
+          <span>·</span>
+          <span id="clockDateStr">Selasa, 17 Nov 2026</span>
+        </div>
+      </div>
+
+      <h1 class="hero-title" id="heroMatkulTitle">Dika-Hub <span class="grad">Akademik</span></h1>
+      <p class="hero-desc" id="heroLedeText">
+        Portal perkuliahan Sistem Informasi Berbasis Web & Mobile milik Dika. Terintegrasi silabus 16 pertemuan, papan tugas Kanban drag & drop, serta checklist belajar mandiri.
+      </p>
+
+      <!-- 4 Interactive KPI Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card spotlight-card">
+          <div class="kpi-header">
+            <span class="kpi-label">Progres Semester</span>
+            <span class="kpi-icon">📚</span>
+          </div>
+          <div class="kpi-val" id="kpiMateriVal">0/16</div>
+          <div class="kpi-sub" id="kpiMateriSub">0% semester berjalan</div>
+          <div class="kpi-progress">
+            <div class="kpi-progress-bar" id="kpiMateriBar" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <div class="kpi-card spotlight-card">
+          <div class="kpi-header">
+            <span class="kpi-label">Materi Dipelajari</span>
+            <span class="kpi-icon">🧠</span>
+          </div>
+          <div class="kpi-val" id="kpiStudiedVal">0/16</div>
+          <div class="kpi-sub" id="kpiStudiedSub">Centang materi yang selesai dibaca</div>
+          <div class="kpi-progress">
+            <div class="kpi-progress-bar" id="kpiStudiedBar" style="width: 0%; background:#10B981;"></div>
+          </div>
+        </div>
+
+        <div class="kpi-card spotlight-card">
+          <div class="kpi-header">
+            <span class="kpi-label">Tugas Terselesaikan</span>
+            <span class="kpi-icon">🎯</span>
+          </div>
+          <div class="kpi-val" id="kpiTugasVal">0/0</div>
+          <div class="kpi-sub" id="kpiTugasSub">Belum ada tugas dicatat</div>
+          <div class="kpi-progress">
+            <div class="kpi-progress-bar" id="kpiTugasBar" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <div class="kpi-card spotlight-card">
+          <div class="kpi-header">
+            <span class="kpi-label">Tenggat Terdekat</span>
+            <span class="kpi-icon">⏰</span>
+          </div>
+          <div class="kpi-val" id="kpiTenggatVal">-</div>
+          <div class="kpi-sub" id="kpiTenggatSub">Semua tugas aman</div>
+          <div class="kpi-progress">
+            <div class="kpi-progress-bar" id="kpiTenggatBar" style="width: 100%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NAVIGATION TABS -->
+  <div class="tabs-bar" role="tablist">
+    <button class="tab-btn active" id="tabMateri" data-tab="materi" type="button">
+      <span>📚 Materi Perkuliahan</span>
+      <span class="tab-count" id="badgeMateriCount">16</span>
+    </button>
+    <button class="tab-btn" id="tabTugas" data-tab="tugas" type="button">
+      <span>📝 Papan Tugas</span>
+      <span class="tab-count" id="badgeTugasCount">0</span>
+    </button>
+    <button class="tab-btn" id="tabTentang" data-tab="tentang" type="button">
+      <span>🎓 Profil & Spesifikasi</span>
+    </button>
+  </div>
+
+  <!-- PANEL: MATERI -->
+  <section id="panelMateri">
+    <div class="toolbar-wrap">
+      <div class="search-input-box">
+        <svg class="search-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input class="search-field" id="materiSearchInput" type="search" placeholder="Cari materi kuliah (mis. REST, ERD, Flutter, OWASP)..." autocomplete="off">
+        <span class="search-kbd-hint">Ctrl K</span>
+      </div>
+      <div class="chips-row" id="materiTagChips"></div>
+    </div>
+    <div class="materi-list" id="materiListContainer"></div>
+  </section>
+
+  <!-- PANEL: TUGAS -->
+  <section id="panelTugas" hidden>
+    <div class="tugas-toolbar">
+      <div class="tugas-controls-left">
+        <div class="view-switch-box">
+          <button class="view-btn active" id="btnViewKanban" type="button">📌 Papan Kanban (Drag & Drop)</button>
+          <button class="view-btn" id="btnViewList" type="button">📋 Daftar Rinci</button>
+        </div>
+        <div class="chips-row" id="tugasStatusChips"></div>
+      </div>
+
+      <button class="btn-primary" id="btnOpenAddTask" type="button">
+        <span>➕</span> Tambah Tugas
+      </button>
+    </div>
+
+    <div class="kanban-grid" id="tugasKanbanView"></div>
+    <div class="tugas-list-view" id="tugasListView" hidden></div>
+  </section>
+
+  <!-- PANEL: TENTANG & PROFIL -->
+  <section id="panelTentang" hidden>
+    <div class="about-grid">
+      <div class="about-card spotlight-card" id="studentIdCard">
+        <h2 class="about-title"><span>🎓</span> Kartu Mahasiswa Digital</h2>
+        <dl class="facts-list" id="factsListContainer"></dl>
+      </div>
+
+      <div class="about-card spotlight-card">
+        <h2 class="about-title"><span>⚡</span> Penguasaan Kompetensi</h2>
+        <div class="skill-bar-wrap">
+          <div class="skill-item">
+            <div class="skill-meta"><span>Frontend Web (HTML, CSS, JS)</span><span>95%</span></div>
+            <div class="skill-track"><div class="skill-fill" style="width:95%;"></div></div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-meta"><span>Backend & REST API</span><span>88%</span></div>
+            <div class="skill-track"><div class="skill-fill" style="width:88%;"></div></div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-meta"><span>Perancangan Basis Data & SQL</span><span>85%</span></div>
+            <div class="skill-track"><div class="skill-fill" style="width:85%;"></div></div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-meta"><span>Mobile App Development (Flutter)</span><span>80%</span></div>
+            <div class="skill-track"><div class="skill-fill" style="width:80%;"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-card spotlight-card" style="grid-column: 1 / -1;">
+        <h2 class="about-title"><span>⚙️</span> Arsitektur & Teknologi Web</h2>
+        <p style="font-size:0.875rem; color:var(--fg-muted); margin-bottom:12px; line-height:1.6;">
+          Dika-Hub dibangun dengan standar UI/UX modern berbasis <em>Zero-Build Architecture</em>:
+        </p>
+        <ul style="padding-left:20px; font-size:0.875rem; color:var(--fg-main); display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:10px; line-height:1.5;">
+          <li>🔍 <strong>Command Palette (Ctrl+K)</strong>: Pintasan cepat akses materi dan aksi.</li>
+          <li>🔊 <strong>Text-to-Speech (TTS)</strong>: Membacakan ringkasan materi secara bersuara.</li>
+          <li>🎯 <strong>Drag & Drop Kanban</strong>: Papan tugas interaktif dengan perayaan konfeti 🎉.</li>
+          <li>🧠 <strong>Study Checklist</strong>: Pelacakan progres materi 16 pertemuan.</li>
+          <li>⏱️ <strong>Pomodoro Timer</strong>: Alat bantu konsentrasi belajar 25 menit.</li>
+          <li>📝 <strong>Scratchpad Cepat</strong>: Catatan kuliah mengambang dengan autosave.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ==========================================================================
+     COMMAND PALETTE SPOTLIGHT MODAL (CTRL + K)
+     ========================================================================== -->
+<div class="palette-modal-backdrop" id="commandPaletteModal" hidden>
+  <div class="command-palette-box">
+    <div class="cmd-input-row">
+      <span style="font-size:1.2rem; color:var(--accent);">🔍</span>
+      <input type="text" class="cmd-search-input" id="cmdPaletteInput" placeholder="Ketik perintah atau cari materi..." autocomplete="off">
+      <span class="kbd-badge">Esc untuk tutup</span>
+    </div>
+    <div class="cmd-results-list" id="cmdResultsList"></div>
+    <div class="cmd-footer">
+      <span>Gunakan tombol ↑ ↓ untuk memilih</span>
+      <span>Tekan Enter untuk jalankan</span>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================================================
+     FLOATING STUDY TOOLS (NOTES SCRATCHPAD & POMODORO)
+     ========================================================================== -->
+<button class="floating-notes-btn" id="btnToggleNotes" type="button">
+  <span>📝</span> <span>Catatan Kuliah</span>
+</button>
+
+<div class="notes-drawer" id="notesDrawer" hidden>
+  <div class="notes-header">
+    <span>📝 Catatan Cepat Kuliah</span>
+    <button type="button" id="btnCloseNotes" style="font-size:1.1rem; color:var(--fg-muted);">✕</button>
+  </div>
+  <textarea class="notes-textarea" id="notesTextarea" placeholder="Tuliskan catatan, rumus, atau link penting di sini... (otomatis tersimpan)"></textarea>
+  <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:var(--fg-muted);">
+    <span id="notesSavedIndicator">Tersimpan otomatis</span>
+    <button type="button" id="btnClearNotes" style="color:var(--status-danger); font-size:0.75rem;">Hapus Catatan</button>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="pomodoroModal" hidden>
+  <div class="modal-box" style="max-width: 420px;">
+    <div class="modal-header">
+      <div class="modal-title-area">
+        <div class="modal-icon-badge">⏱️</div>
+        <div class="modal-title">Fokus Belajar (Pomodoro)</div>
+      </div>
+      <button class="modal-close-btn" id="closePomoBtn" type="button">✕</button>
+    </div>
+    <div class="modal-body pomo-card">
+      <span style="font-size:0.8125rem; color:var(--fg-muted);">Teknik 25 menit fokus penuh materi kuliah</span>
+      <div class="pomo-timer-display" id="pomoTimerDisplay">25:00</div>
+      <div class="pomo-controls">
+        <button class="btn-primary" id="btnPomoStart" type="button">Mulai Fokus</button>
+        <button class="cyber-icon-btn" id="btnPomoReset" type="button">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GANTI KATA SANDI MODAL -->
+<div class="modal-backdrop" id="changePassModal" hidden>
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title-area">
+        <div class="modal-icon-badge">🔑</div>
+        <div>
+          <div class="modal-title">Ganti Kata Sandi Master</div>
+          <span style="font-size:0.75rem; color:var(--fg-muted);">Atur kata sandi baru untuk akses pemilik</span>
+        </div>
+      </div>
+      <button class="modal-close-btn" id="closeChangePassBtn" type="button">✕</button>
+    </div>
+
+    <form id="changePassForm">
+      <div class="modal-body">
+        <div class="form-grid">
+          <label class="input-label" for="oldPasswordInput">
+            <span>Kata Sandi Saat Ini</span>
+            <div class="password-field-wrapper">
+              <input class="text-input" type="password" id="oldPasswordInput" required placeholder="Kata sandi lama...">
+              <button class="toggle-password-btn" type="button" id="toggleOldPassBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </label>
+
+          <label class="input-label" for="newPasswordInput">
+            <span>Kata Sandi Baru</span>
+            <div class="password-field-wrapper">
+              <input class="text-input" type="password" id="newPasswordInput" required placeholder="Minimal 4 karakter...">
+              <button class="toggle-password-btn" type="button" id="toggleNewPassBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </label>
+
+          <label class="input-label" for="confirmNewPassInput">
+            <span>Konfirmasi Kata Sandi Baru</span>
+            <div class="password-field-wrapper">
+              <input class="text-input" type="password" id="confirmNewPassInput" required placeholder="Ulangi kata sandi baru...">
+              <button class="toggle-password-btn" type="button" id="toggleConfirmPassBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </label>
+
+          <div id="changePassErrAlert" style="color:var(--status-danger); font-size:0.8125rem;" hidden></div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="cyber-icon-btn" id="cancelChangePassBtn" type="button">Batal</button>
+        <button class="btn-primary" type="submit">Simpan Kata Sandi</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- FORM TUGAS MODAL -->
+<div class="modal-backdrop" id="taskModal" hidden>
+  <div class="modal-box" style="max-width: 600px;">
+    <div class="modal-header">
+      <div class="modal-title-area">
+        <div class="modal-icon-badge">📝</div>
+        <div class="modal-title" id="taskModalTitle">Tambah Tugas Baru</div>
+      </div>
+      <button class="modal-close-btn" id="closeTaskModalBtn" type="button">✕</button>
+    </div>
+
+    <form id="taskModalForm">
+      <div class="modal-body">
+        <div class="form-grid">
+          <label class="input-label" for="fJudul">
+            <span>Judul Tugas *</span>
+            <input class="text-input" type="text" id="fJudul" required maxlength="120" placeholder="mis. Tugas 04 - API Endpoint">
+          </label>
+
+          <label class="input-label" for="fDeskripsi">
+            <span>Deskripsi / Petunjuk</span>
+            <textarea class="textarea-input" id="fDeskripsi" maxlength="400" placeholder="Rincian ketentuan pengerjaan tugas..."></textarea>
+          </label>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+            <label class="input-label" for="fTenggat">
+              <span>Tenggat Pengumpulan *</span>
+              <input class="text-input" type="date" id="fTenggat" required>
+            </label>
+            <label class="input-label" for="fStatus">
+              <span>Status Tugas</span>
+              <select class="select-input" id="fStatus">
+                <option value="belum">Belum mulai</option>
+                <option value="dikerjakan">Dikerjakan</option>
+                <option value="dikumpulkan">Dikumpulkan</option>
+                <option value="dinilai">Dinilai</option>
+              </select>
+            </label>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+            <label class="input-label" for="fPertemuan">
+              <span>Terkait Pertemuan</span>
+              <input class="text-input" type="text" id="fPertemuan" maxlength="20" placeholder="mis. P05">
+            </label>
+            <label class="input-label" for="fKode">
+              <span>Kode Tugas</span>
+              <input class="text-input" type="text" id="fKode" maxlength="8" placeholder="Otomatis (mis. T4)">
+            </label>
+          </div>
+
+          <label class="input-label" for="fTautan">
+            <span>Tautan Berkas / Repository (GitHub, Drive, dsb)</span>
+            <input class="text-input" type="url" id="fTautan" maxlength="300" placeholder="https://github.com/...">
+          </label>
+
+          <div class="input-label">
+            <span>Berkas Tugas (PDF / Word / PowerPoint)</span>
+            <div class="upload-zone" id="fileDropZone" tabindex="0" role="button" aria-label="Pilih atau seret berkas">
+              📎 Klik atau seret file ke sini
+              <small>.pdf, .doc, .docx, .ppt, .pptx · maks. 20 MB per file</small>
+            </div>
+            <input type="file" id="fBerkasInput" multiple hidden accept=".pdf,.doc,.docx,.ppt,.pptx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation">
+            <div class="file-list" id="fileListBox"></div>
+            <div class="upload-hint" id="fileStorageHint"></div>
+          </div>
+
+          <div id="taskFormErrAlert" style="color:var(--status-danger); font-size:0.8125rem;" hidden></div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="cyber-icon-btn" id="cancelTaskBtn" type="button">Batal</button>
+        <button class="btn-primary" id="saveTaskBtn" type="submit">Simpan Tugas</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
 <script src="config.js"></script>
+
 <script>
+/* ==========================================================================
+   ACADEMIC CURRICULUM DATA (16 PERTEMUAN)
+   ========================================================================== */
 const DATA = {
-  contoh: true,
   meta: {
     nama: 'Dika',
     prodi: 'S1 Teknik Informatika',
@@ -515,764 +1714,1718 @@ const DATA = {
   ]
 };
 
-const STATUS_LABEL = { belum: 'Belum mulai', dikerjakan: 'Dikerjakan', dikumpulkan: 'Dikumpulkan', dinilai: 'Dinilai' };
-const DONE = ['dikumpulkan', 'dinilai'];
-const TABS = ['materi', 'tugas', 'tentang'];
+const DEFAULT_TASKS = [
+  {
+    id: 't_demo1',
+    kode: 'T1',
+    judul: 'Tugas 01 - Analisis Kebutuhan Sistem & Wireframe',
+    deskripsi: 'Membuat dokumen SRS ringkas dan wireframe antarmuka pengguna untuk sistem informasi perkuliahan.',
+    tenggat: '2026-09-25',
+    status: 'dinilai',
+    pertemuan: 'P03',
+    tautan: 'https://github.com',
+    berkas: []
+  },
+  {
+    id: 't_demo2',
+    kode: 'T2',
+    judul: 'Tugas 02 - Perancangan ERD & Skema Basis Data 3NF',
+    deskripsi: 'Menyusun diagram relasi entitas lengkap dengan kardinalitas dan normalisasi hingga 3NF.',
+    tenggat: '2026-10-18',
+    status: 'dikumpulkan',
+    pertemuan: 'P06',
+    tautan: '',
+    berkas: []
+  },
+  {
+    id: 't_demo3',
+    kode: 'T3',
+    judul: 'Tugas 03 - Pembuatan Endpoint REST API & Autentikasi',
+    deskripsi: 'Implementasi endpoint CRUD autentikasi JWT dan respons JSON standar untuk web & mobile.',
+    tenggat: '2026-11-20',
+    status: 'dikerjakan',
+    pertemuan: 'P07',
+    tautan: 'https://developer.mozilla.org',
+    berkas: []
+  }
+];
+
+const STATUS_LABEL = {
+  belum: 'Belum mulai',
+  dikerjakan: 'Dikerjakan',
+  dikumpulkan: 'Dikumpulkan',
+  dinilai: 'Dinilai'
+};
+
+const DONE_STATUSES = ['dikumpulkan', 'dinilai'];
+const CONFIG = window.JURNAL_CONFIG || {};
 
 const $ = (id) => document.getElementById(id);
-function el(tag, cls, text) {
-  const n = document.createElement(tag);
-  if (cls) n.className = cls;
-  if (text != null) n.textContent = text;
-  return n;
-}
 function parseDate(s) { const p = s.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); }
 function startOfToday() { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
 function daysFrom(s) { return Math.round((parseDate(s) - startOfToday()) / 86400000); }
-function fmt(s, withDay) {
+function fmtDate(s, withDay) {
+  if (!s) return '-';
   const o = { day: 'numeric', month: 'short', year: 'numeric' };
   if (withDay) o.weekday = 'short';
   return parseDate(s).toLocaleDateString('id-ID', o);
 }
 
-const state = { tab: 'materi', tag: 'Semua', q: '', status: 'Semua' };
-let tasks = [], tasksLoaded = false, tasksError = '', canWrite = false, store = null, mode = '';
-let editingId = null, confirmId = null;
-const CONFIG = window.JURNAL_CONFIG || {};
-let session = null;
-let downloadsApi = null, assetsApi = null, formFiles = [], newFiles = [], removedIds = [];
-
-/* Header dan ringkasan */
-function renderHeader() {
-  const m = DATA.meta;
-  $('eyebrow').textContent = m.kelas + ' · Semester ' + m.semester;
-  $('judul').textContent = m.matkul;
-  $('lede').textContent = 'Materi tiap pertemuan dan tugas kuliah milik ' + m.nama + ', ' + m.prodi + ', ' + m.kampus + '.';
-  $('notice').hidden = !DATA.contoh;
-
-  const posted = DATA.materi.filter((x) => daysFrom(x.tanggal) <= 0).length;
-  $('sMateri').innerHTML = posted + ' <small>dari ' + DATA.materi.length + ' pertemuan</small>';
-  $('cMateri').textContent = DATA.materi.length;
-  $('foot').textContent = 'Diperbarui dari berkas situs · ' + m.matkul + ' · ' + m.kampus;
-}
-
-/* Materi */
-function renderTagChips() {
-  const tags = ['Semua'];
-  DATA.materi.forEach((x) => x.tag.forEach((t) => { if (!tags.includes(t)) tags.push(t); }));
-  const box = $('tagChips');
-  box.textContent = '';
-  tags.forEach((t) => {
-    const b = el('button', 'chip', t);
-    b.type = 'button';
-    b.setAttribute('aria-pressed', String(state.tag === t));
-    b.addEventListener('click', () => { state.tag = t; renderTagChips(); renderMateri(); });
-    box.appendChild(b);
-  });
-}
-function renderMateri() {
-  const q = state.q.trim().toLowerCase();
-  const rows = DATA.materi.filter((x) => {
-    if (state.tag !== 'Semua' && !x.tag.includes(state.tag)) return false;
-    if (!q) return true;
-    return (x.kode + ' ' + x.judul + ' ' + x.ringkas + ' ' + x.poin.join(' ') + ' ' + x.tag.join(' ')).toLowerCase().includes(q);
-  });
-  const box = $('materiList');
-  box.textContent = '';
-  if (!rows.length) { box.appendChild(el('p', 'empty', 'Tidak ada materi yang cocok. Coba kata kunci lain atau pilih topik Semua.')); return; }
-  const list = el('div', 'list');
-  rows.forEach((x) => {
-    const soon = daysFrom(x.tanggal) > 0;
-    const d = document.createElement('details');
-    d.className = 'item';
-    if (soon) d.setAttribute('data-soon', '');
-    const s = document.createElement('summary');
-    s.appendChild(el('span', 'item-code', x.kode));
-    s.appendChild(el('span', 'item-title', x.judul));
-    s.appendChild(el('span', 'item-date', fmt(x.tanggal, true)));
-    const meta = el('span', 'item-meta');
-    x.tag.forEach((t) => meta.appendChild(el('span', 'tag', t)));
-    if (soon) meta.appendChild(el('span', 'tag soon', 'Akan datang'));
-    s.appendChild(meta);
-    d.appendChild(s);
-    const body = el('div', 'item-body');
-    body.appendChild(el('p', null, x.ringkas));
-    if (x.poin.length) {
-      const ul = el('ul');
-      x.poin.forEach((p) => ul.appendChild(el('li', null, p)));
-      body.appendChild(ul);
-    }
-    if (x.tautan && x.tautan.length) {
-      const ul = el('ul', 'links');
-      x.tautan.forEach((l) => {
-        const li = el('li');
-        const a = el('a', null, l.label + ' ↗');
-        a.href = l.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
-        li.appendChild(a); ul.appendChild(li);
-      });
-      body.appendChild(ul);
-    }
-    d.appendChild(body);
-    list.appendChild(d);
-  });
-  box.appendChild(list);
-}
-
-/* Tugas */
-function renderStatusChips() {
-  const opts = ['Semua', 'Belum selesai', 'Selesai'];
-  const box = $('statusChips');
-  box.textContent = '';
-  opts.forEach((t) => {
-    const b = el('button', 'chip', t);
-    b.type = 'button';
-    b.setAttribute('aria-pressed', String(state.status === t));
-    b.addEventListener('click', () => { state.status = t; renderStatusChips(); renderTugas(); });
-    box.appendChild(b);
-  });
-}
-function setStat(id, big, small) {
-  const n = $(id);
-  n.textContent = '';
-  if (big) n.appendChild(document.createTextNode(big + ' '));
-  n.appendChild(el('small', null, small));
-}
-function renderStats() {
-  if (!tasksLoaded || tasksError) {
-    setStat('sTugas', '', tasksError ? 'Belum tersedia' : 'Memuat');
-    setStat('sTenggat', '', tasksError ? 'Belum tersedia' : 'Memuat');
-    $('cTugas').textContent = '';
-    return;
-  }
-  const done = tasks.filter((t) => DONE.includes(t.status)).length;
-  const open = tasks.filter((t) => !DONE.includes(t.status) && t.tenggat).sort((a, b) => a.tenggat.localeCompare(b.tenggat));
-  setStat('sTugas', String(done), 'dari ' + tasks.length + ' tugas');
-  const nx = open[0];
-  if (nx) {
-    const d = daysFrom(nx.tenggat);
-    setStat('sTenggat', nx.kode || 'Tugas', d < 0 ? 'terlambat ' + Math.abs(d) + ' hari' : d === 0 ? 'hari ini' : d + ' hari lagi');
-  } else {
-    setStat('sTenggat', '', tasks.length ? 'Semua tugas terkumpul' : 'Belum ada tugas');
-  }
-  $('cTugas').textContent = tasks.length;
-}
-function renderAllTugas() { renderStats(); renderTugas(); }
-
-function storeNoteText() {
-  if (mode === 'db') return canWrite ? 'Tersimpan otomatis di akun Claude' : 'Hanya pemilik yang dapat mengubah tugas';
-  if (mode === 'supa') return canWrite ? 'Tersimpan di database Supabase. Anda masuk sebagai pemilik.' : 'Hanya pemilik yang dapat mengubah tugas';
-  if (mode === 'lokal') return 'Tersimpan di browser ini. Berkas dicatat lewat tautan.';
-  return '';
-}
-function showMsg(text) { const m = $('tugasMsg'); m.textContent = text || ''; m.hidden = !text; }
-function errText(e) {
-  const c = e && e.code;
-  if (c === 'quota_exceeded') return 'Penyimpanan penuh. Hapus beberapa tugas lama, lalu coba lagi.';
-  if (c === 'invalid_argument') return 'Perubahan ditolak. Hanya pemilik halaman yang dapat mengubah tugas.';
-  return 'Perubahan belum tersimpan. Periksa koneksi, lalu coba lagi.';
-}
-async function changeStatus(id, status) {
-  showMsg('');
-  try { await store.patch(id, { status: status }); } catch (e) { showMsg(errText(e)); renderTugas(); }
-}
-async function removeTask(id) {
-  confirmId = null;
-  showMsg('');
-  const old = tasks.find((x) => x.id === id);
-  try {
-    await store.remove(id);
-    if (assetsApi && old && Array.isArray(old.berkas)) {
-      old.berkas.forEach((b) => { assetsApi.delete(b.id).catch(() => {}); });
-    }
-  } catch (e) { showMsg(errText(e)); renderTugas(); }
-}
-function nextKode() {
-  let n = 0;
-  tasks.forEach((t) => { const m = /^T(\d+)$/i.exec(t.kode || ''); if (m) n = Math.max(n, Number(m[1])); });
-  return 'T' + (n + 1);
-}
-function buildStatusOptions() {
-  const sel = $('f-status');
-  Object.keys(STATUS_LABEL).forEach((k) => {
-    const o = document.createElement('option');
-    o.value = k; o.textContent = STATUS_LABEL[k];
-    sel.appendChild(o);
-  });
-}
-
-const TYPE_BY_EXT = {
-  pdf: 'application/pdf',
-  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-  zip: 'application/zip',
-  png: 'image/png',
-  jpg: 'image/jpeg',
-  jpeg: 'image/jpeg',
-  gif: 'image/gif',
-  webp: 'image/webp',
-  mp4: 'video/mp4',
-  webm: 'video/webm',
-  txt: 'text/plain',
-  md: 'text/markdown',
-  csv: 'text/csv',
-  json: 'application/json'
+const appState = {
+  activeTab: 'materi',
+  materiTag: 'Semua',
+  materiQuery: '',
+  tugasStatus: 'Semua',
+  tugasView: 'kanban',
+  tasks: [],
+  tasksLoaded: false,
+  isLoggedIn: false,
+  authMethod: 'local',
+  session: null,
+  localUser: null,
+  masterPass: 'admin123',
+  editingTaskId: null,
+  pendingFiles: [],
+  formFiles: [],
+  removedFiles: [],
+  soundEnabled: true,
+  studiedMap: {},
+  cmdIndex: 0
 };
 
-function typeFor(f) {
-  const m = /\.([A-Za-z0-9]+)$/.exec(f.name || '');
-  const ext = m ? m[1].toLowerCase() : '';
-  const knownType = TYPE_BY_EXT[ext];
+/* ==========================================================================
+   DYNAMIC MOUSE SPOTLIGHT EFFECT ON CARDS
+   ========================================================================== */
+function initMouseSpotlight() {
+  document.querySelectorAll('.spotlight-card').forEach((card) => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      card.style.setProperty('--mouse-x', `${x}px`);
+      card.style.setProperty('--mouse-y', `${y}px`);
+    });
+  });
+}
 
-  if (mode === 'supa') {
-    return knownType || f.type || 'application/octet-stream';
+/* ==========================================================================
+   CANVAS PARTICLES & CONFETTI CELEBRATION
+   ========================================================================== */
+function initAmbientCanvas() {
+  const canvas = $('ambientCanvas');
+  const ctx = canvas.getContext('2d');
+  let width, height, particles = [];
+
+  function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  for (let i = 0; i < 40; i++) {
+    particles.push({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: (Math.random() - 0.5) * 0.45,
+      vy: (Math.random() - 0.5) * 0.45,
+      radius: Math.random() * 2 + 1
+    });
   }
 
-  return knownType || '';
+  function loop() {
+    ctx.clearRect(0, 0, width, height);
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    ctx.fillStyle = isDark ? 'rgba(59, 130, 246, 0.4)' : 'rgba(37, 99, 235, 0.25)';
+    ctx.strokeStyle = isDark ? 'rgba(59, 130, 246, 0.08)' : 'rgba(37, 99, 235, 0.05)';
+
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = width;
+      if (p.x > width) p.x = 0;
+      if (p.y < 0) p.y = height;
+      if (p.y > height) p.y = 0;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fill();
+
+      for (let j = i + 1; j < particles.length; j++) {
+        const p2 = particles[j];
+        const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+        if (dist < 110) {
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(loop);
+  }
+  loop();
 }
 
+function triggerConfetti() {
+  const canvas = $('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
-function fmtSize(n) {
-  if (!n) return '';
-  if (n < 1024) return n + ' B';
-  if (n < 1048576) return Math.round(n / 1024) + ' KB';
-  return (n / 1048576).toLocaleString('id-ID', { maximumFractionDigits: 1 }) + ' MB';
+  const pieces = [];
+  const colors = ['#2563EB', '#10B981', '#7C3AED', '#F59E0B', '#EF4444', '#06B6D4'];
+  for (let i = 0; i < 90; i++) {
+    pieces.push({
+      x: canvas.width / 2,
+      y: canvas.height / 2,
+      vx: (Math.random() - 0.5) * 16,
+      vy: (Math.random() - 0.7) * 18,
+      size: Math.random() * 8 + 4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rotation: Math.random() * 360,
+      vRot: (Math.random() - 0.5) * 10
+    });
+  }
+
+  let frame = 0;
+  function update() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach((p) => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.35; // gravity
+      p.rotation += p.vRot;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.rotation * Math.PI) / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+      ctx.restore();
+    });
+    frame++;
+    if (frame < 120) requestAnimationFrame(update);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  update();
 }
-function uploadErrText(e) {
-  const c = e && e.code;
-  if (c === 'too_large') return 'Berkas terlalu besar. Maksimal 20 MB per berkas.';
-  if (c === 'unsupported_type') return 'Jenis berkas belum didukung. Gunakan PDF, gambar, video, atau teks, atau tempel tautan.';
-  if (c === 'quota_or_state') return 'Penyimpanan berkas penuh. Hapus berkas lama atau pakai tautan.';
-  if (c === 'rate_limited') return 'Terlalu banyak unggahan sekaligus. Tunggu sebentar, lalu coba lagi.';
-  return errText(e);
-}
-function renderFileList() {
-  const ul = $('fileList');
-  ul.textContent = '';
-  formFiles.forEach((b, i) => {
-    const li = el('li');
-    li.appendChild(el('span', null, b.nama));
-    li.appendChild(el('span', 'fsize', fmtSize(b.ukuran)));
-    const x = el('button', 'link-btn', 'Lepas');
-    x.type = 'button';
-    x.addEventListener('click', () => { removedIds.push(b.id); formFiles.splice(i, 1); renderFileList(); });
-    li.appendChild(x);
-    ul.appendChild(li);
-  });
-  newFiles.forEach((f, i) => {
-    const li = el('li');
-    li.appendChild(el('span', null, f.name));
-    li.appendChild(el('span', 'fsize', fmtSize(f.size) + ' · akan diunggah'));
-    const x = el('button', 'link-btn', 'Batal');
-    x.type = 'button';
-    x.addEventListener('click', () => { newFiles.splice(i, 1); renderFileList(); });
-    li.appendChild(x);
-    ul.appendChild(li);
-  });
-}
-$('f-berkas').addEventListener('change', (e) => {
-  const err = $('formErr');
-  err.hidden = true;
-  Array.from(e.target.files).forEach((f) => {
-    if (!typeFor(f)) { err.textContent = f.name + ' tidak bisa diunggah. Gunakan PDF, gambar, video, atau teks, atau tempel tautan.'; err.hidden = false; return; }
-    if (f.size > 20 * 1024 * 1024) { err.textContent = f.name + ' lebih dari 20 MB.'; err.hidden = false; return; }
-    newFiles.push(f);
-  });
-  e.target.value = '';
-  renderFileList();
-});
-const HINT_DEFAULT = $('fileHint').textContent;
-function openForm(t) {
-  editingId = t ? t.id : null;
-  $('formTitle').textContent = t ? 'Ubah tugas' : 'Tambah tugas';
-  $('f-judul').value = t ? (t.judul || '') : '';
-  $('f-deskripsi').value = t ? (t.deskripsi || '') : '';
-  $('f-tenggat').value = t ? (t.tenggat || '') : '';
-  $('f-status').value = t ? (t.status || 'belum') : 'belum';
-  $('f-pertemuan').value = t ? (t.pertemuan || '') : '';
-  $('f-kode').value = t ? (t.kode || '') : '';
-  $('f-tautan').value = t ? (t.tautan || '') : '';
-  formFiles = t && Array.isArray(t.berkas) ? t.berkas.map((b) => Object.assign({}, b)) : [];
-  newFiles = [];
-  removedIds = [];
-  $('fileBox').hidden = !assetsApi;
-  $('fileHint').textContent = mode === 'supa' ? 'Semua jenis berkas, maksimal 20 MB per berkas.' : HINT_DEFAULT;
-  if (mode === 'supa') $('f-berkas').removeAttribute('accept');
-  renderFileList();
-  $('formErr').hidden = true;
-  $('tugasForm').hidden = false;
-  $('f-judul').focus();
-}
-function closeForm() { editingId = null; formFiles = []; newFiles = []; removedIds = []; $('tugasForm').hidden = true; }
-$('addBtn').addEventListener('click', () => openForm(null));
-$('cancelBtn').addEventListener('click', closeForm);
-$('tugasForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const err = $('formErr');
-  const judul = $('f-judul').value.trim();
-  const tenggat = $('f-tenggat').value;
-  if (!judul || !tenggat) { err.textContent = 'Isi judul dan tenggat tugas.'; err.hidden = false; return; }
-  const btn = $('saveBtn');
-  btn.disabled = true;
-  const data = {
-    judul: judul,
-    deskripsi: $('f-deskripsi').value.trim(),
-    tenggat: tenggat,
-    status: $('f-status').value,
-    pertemuan: $('f-pertemuan').value.trim(),
-    kode: $('f-kode').value.trim(),
-    tautan: $('f-tautan').value.trim()
-  };
-  if (data.tautan && !/^https?:\/\//i.test(data.tautan)) {
-    err.textContent = 'Tautan harus diawali http:// atau https://.';
-    err.hidden = false;
-    btn.disabled = false;
+
+/* ==========================================================================
+   WEB SPEECH API (TEXT-TO-SPEECH SUARA SUARA INDONESIA)
+   ========================================================================== */
+window.speakMateri = function(kode, judul, ringkas) {
+  playCyberSound('click');
+  if (!('speechSynthesis' in window)) {
+    showToast('Browser Anda belum mendukung pembaca suara.');
     return;
   }
-  const uploaded = [];
-  try {
-    for (const f of newFiles) {
-      const r = await assetsApi.upload(f, { type: typeFor(f) });
-      uploaded.push({ id: r.id, nama: f.name.slice(0, 120), ukuran: r.sizeBytes, tipe: r.contentType });
-    }
-    data.berkas = formFiles.concat(uploaded);
-    if (editingId) {
-      await store.patch(editingId, data);
-    } else {
-      if (!data.kode) data.kode = nextKode();
-      data.dibuat = new Date().toISOString();
-      await store.add(data);
-    }
-    removedIds.forEach((id) => { assetsApi.delete(id).catch(() => {}); });
-    closeForm();
-    showMsg('');
-  } catch (ex) {
-    uploaded.forEach((u) => { assetsApi.delete(u.id).catch(() => {}); });
-    err.textContent = uploadErrText(ex);
-    err.hidden = false;
-  }
-  btn.disabled = false;
-});
+  window.speechSynthesis.cancel();
+  const text = `Pertemuan ${kode}. ${judul}. Rangkuman: ${ringkas}`;
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'id-ID';
+  utterance.rate = 1.0;
+  utterance.pitch = 1.0;
 
-const EXT_BY_TYPE = { 'application/pdf': 'pdf', 'image/png': 'png', 'image/jpeg': 'jpg', 'image/gif': 'gif', 'image/webp': 'webp', 'video/mp4': 'mp4', 'video/webm': 'webm', 'text/plain': 'txt', 'text/markdown': 'md', 'text/csv': 'csv', 'application/json': 'json' };
-function downloadName(b) {
-  const nama = b.nama || 'berkas';
-  if (/\.[A-Za-z0-9]{2,5}$/.test(nama)) return nama;
-  return nama + '.' + (EXT_BY_TYPE[b.tipe] || 'pdf');
-}
-async function downloadFile(b) {
-  showMsg('');
+  utterance.onstart = () => showToast(`🔊 Membacakan materi ${kode}...`);
+  utterance.onerror = () => showToast(`Selesai membacakan.`);
+  window.speechSynthesis.speak(utterance);
+};
+
+/* ==========================================================================
+   CYBER SYNTHESIZER SOUND FX (WEB AUDIO API)
+   ========================================================================== */
+let audioCtx = null;
+function playCyberSound(type = 'click') {
+  if (!appState.soundEnabled) return;
   try {
-    const res = await fetch('/_blob/' + b.id);
-    if (!res.ok) throw new Error('http ' + res.status);
-    const blob = await res.blob();
-    await downloadsApi.save({ filename: downloadName(b), data: blob });
-  } catch (e) {
-    if (e && e.code === 'declined') return;
-    showMsg(e && e.code === 'rejected_extension' ? 'Jenis berkas ini tidak bisa diunduh dari halaman.' : 'Berkas belum bisa diunduh. Muat ulang halaman, lalu coba lagi.');
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    const now = audioCtx.currentTime;
+    if (type === 'click') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(600, now);
+      osc.frequency.exponentialRampToValueAtTime(300, now + 0.08);
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+      osc.start(now);
+      osc.stop(now + 0.08);
+    } else if (type === 'success') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(440, now);
+      osc.frequency.setValueAtTime(660, now + 0.1);
+      osc.frequency.setValueAtTime(880, now + 0.2);
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.35);
+      osc.start(now);
+      osc.stop(now + 0.35);
+    } else if (type === 'drop') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(350, now);
+      osc.frequency.exponentialRampToValueAtTime(520, now + 0.12);
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
+      osc.start(now);
+      osc.stop(now + 0.12);
+    }
+  } catch (e) {}
+}
+
+/* ==========================================================================
+   COMMAND PALETTE SPOTLIGHT SYSTEM (CTRL + K)
+   ========================================================================== */
+const COMMANDS = [
+  { icon: '📚', title: 'Lihat Semua Materi 16 Pertemuan', cat: 'Navigasi', action: () => showTab('materi') },
+  { icon: '📝', title: 'Buka Papan Tugas & Kanban', cat: 'Navigasi', action: () => showTab('tugas') },
+  { icon: '🎓', title: 'Lihat Profil Mahasiswa & Spesifikasi', cat: 'Navigasi', action: () => showTab('tentang') },
+  { icon: '⏱️', title: 'Mulai Timer Fokus Pomodoro (25 Min)', cat: 'Alat', action: () => $('pomodoroModal').hidden = false },
+  { icon: '📝', title: 'Buka Buku Catatan Kuliah Cepat', cat: 'Alat', action: () => $('notesDrawer').hidden = false },
+  { icon: '🌙', title: 'Beralih Mode Gelap / Terang', cat: 'Tema', action: () => $('themeToggleBtn').click() },
+  { icon: '🎨', title: 'Ganti Warna ke Cyber Blue', cat: 'Tema', action: () => setAccentTheme('blue') },
+  { icon: '🟢', title: 'Ganti Warna ke Matrix Emerald', cat: 'Tema', action: () => setAccentTheme('emerald') },
+  { icon: '🟣', title: 'Ganti Warna ke Neon Violet', cat: 'Tema', action: () => setAccentTheme('violet') },
+  { icon: '🌐', title: 'Ganti Warna ke Cyan Horizon', cat: 'Tema', action: () => setAccentTheme('cyan') },
+  { icon: '🟠', title: 'Ganti Warna ke Sunset Amber', cat: 'Tema', action: () => setAccentTheme('amber') },
+  { icon: '🔴', title: 'Ganti Warna ke Crimson Rose', cat: 'Tema', action: () => setAccentTheme('rose') },
+  { icon: '💾', title: 'Ekspor Cadangan Tugas ke JSON', cat: 'Aksi', action: () => exportTasksJson() }
+];
+
+function initCommandPalette() {
+  const modal = $('commandPaletteModal');
+  const input = $('cmdPaletteInput');
+  const list = $('cmdResultsList');
+
+  // Add all 16 meeting items to palette
+  DATA.materi.forEach((m) => {
+    COMMANDS.push({
+      icon: '📖',
+      title: `${m.kode}: ${m.judul}`,
+      cat: 'Materi Silabus',
+      action: () => {
+        showTab('materi');
+        appState.materiQuery = m.kode.toLowerCase();
+        $('materiSearchInput').value = m.kode;
+        renderMateriList();
+      }
+    });
+  });
+
+  function openPalette() {
+    playCyberSound('click');
+    modal.hidden = false;
+    input.value = '';
+    appState.cmdIndex = 0;
+    renderPaletteList('');
+    input.focus();
+  }
+  function closePalette() { modal.hidden = true; }
+
+  $('btnOpenCommandPalette').addEventListener('click', openPalette);
+
+  window.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      modal.hidden ? openPalette() : closePalette();
+    } else if (e.key === 'Escape' && !modal.hidden) {
+      closePalette();
+    }
+  });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closePalette();
+  });
+
+  function renderPaletteList(q) {
+    const query = q.toLowerCase().trim();
+    const filtered = COMMANDS.filter((c) => !query || c.title.toLowerCase().includes(query) || c.cat.toLowerCase().includes(query));
+
+    list.innerHTML = '';
+    if (!filtered.length) {
+      list.innerHTML = '<div style="padding:16px; text-align:center; color:var(--fg-muted); font-size:0.875rem;">Tidak ada perintah yang sesuai.</div>';
+      return;
+    }
+
+    filtered.forEach((cmd, idx) => {
+      const item = document.createElement('div');
+      item.className = 'cmd-item' + (idx === appState.cmdIndex ? ' selected' : '');
+      item.innerHTML = `
+        <div class="cmd-item-left">
+          <span>${cmd.icon}</span>
+          <span>${cmd.title}</span>
+        </div>
+        <span class="cmd-item-badge">${cmd.cat}</span>`;
+      item.addEventListener('click', () => {
+        cmd.action();
+        closePalette();
+      });
+      list.appendChild(item);
+    });
+  }
+
+  input.addEventListener('input', (e) => {
+    appState.cmdIndex = 0;
+    renderPaletteList(e.target.value);
+  });
+
+  input.addEventListener('keydown', (e) => {
+    const items = list.querySelectorAll('.cmd-item');
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (appState.cmdIndex < items.length - 1) appState.cmdIndex++;
+      updateSelection(items);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (appState.cmdIndex > 0) appState.cmdIndex--;
+      updateSelection(items);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      const sel = items[appState.cmdIndex];
+      if (sel) sel.click();
+    }
+  });
+
+  function updateSelection(items) {
+    items.forEach((it, i) => it.classList.toggle('selected', i === appState.cmdIndex));
+    const current = items[appState.cmdIndex];
+    if (current) current.scrollIntoView({ block: 'nearest' });
   }
 }
-function renderTugas() {
-  const box = $('tugasList');
-  box.textContent = '';
-  const editable = canWrite && !!store;
-  $('addBtn').hidden = !editable;
-  $('storeNote').textContent = storeNoteText();
-  renderAuth();
-  if (!tasksLoaded) { box.appendChild(el('p', 'empty', 'Memuat tugas...')); return; }
-  if (tasksError) { box.appendChild(el('p', 'empty', tasksError)); return; }
-  const rows = tasks.filter((t) => {
-    if (state.status === 'Selesai') return DONE.includes(t.status);
-    if (state.status === 'Belum selesai') return !DONE.includes(t.status);
+
+function setAccentTheme(val) {
+  document.documentElement.setAttribute('data-accent', val);
+  localStorage.setItem('dika-hub-accent', val);
+  updatePaletteButtonUI(val);
+  playCyberSound('click');
+  showToast(`Warna tema diubah ke ${val.toUpperCase()}!`);
+}
+
+/* ==========================================================================
+   LIVE REAL-TIME CYBER CLOCK
+   ========================================================================== */
+function initLiveClock() {
+  function tick() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    const s = String(now.getSeconds()).padStart(2, '0');
+    $('clockTimeStr').textContent = `${h}:${m}:${s} WIB`;
+    $('clockDateStr').textContent = now.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  }
+  setInterval(tick, 1000);
+  tick();
+}
+
+/* ==========================================================================
+   THEME & PALETTE MANAGER
+   ========================================================================== */
+function initThemeAndPalette() {
+  const savedTheme = localStorage.getItem('dika-hub-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeButtonUI(savedTheme);
+
+  const savedAccent = localStorage.getItem('dika-hub-accent') || 'blue';
+  document.documentElement.setAttribute('data-accent', savedAccent);
+  updatePaletteButtonUI(savedAccent);
+
+  $('themeToggleBtn').addEventListener('click', () => {
+    playCyberSound('click');
+    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('dika-hub-theme', next);
+    updateThemeButtonUI(next);
+  });
+
+  $('paletteBtn').addEventListener('click', (e) => {
+    playCyberSound('click');
+    e.stopPropagation();
+    $('paletteMenu').hidden = !$('paletteMenu').hidden;
+  });
+
+  document.querySelectorAll('.palette-option-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      playCyberSound('click');
+      const val = btn.dataset.accentVal;
+      setAccentTheme(val);
+      $('paletteMenu').hidden = true;
+    });
+  });
+
+  $('soundToggleBtn').addEventListener('click', () => {
+    appState.soundEnabled = !appState.soundEnabled;
+    $('soundIcon').textContent = appState.soundEnabled ? '🔊' : '🔇';
+    playCyberSound('click');
+    showToast(appState.soundEnabled ? 'Efek suara aktif.' : 'Efek suara dimatikan.');
+  });
+
+  window.addEventListener('click', () => {
+    $('paletteMenu').hidden = true;
+    $('profileMenu').hidden = true;
+  });
+}
+
+function updateThemeButtonUI(theme) {
+  $('themeIcon').textContent = theme === 'dark' ? '🌙' : '☀️';
+  $('themeLabel').textContent = theme === 'dark' ? 'Gelap' : 'Terang';
+}
+
+function updatePaletteButtonUI(accent) {
+  const names = {
+    blue: 'Cyber Blue', emerald: 'Matrix', violet: 'Neon Violet',
+    cyan: 'Cyan Horizon', amber: 'Sunset Amber', rose: 'Crimson'
+  };
+  $('paletteLabel').textContent = names[accent] || 'Tema';
+  document.querySelectorAll('.palette-option-btn').forEach((b) => {
+    const isMatch = b.dataset.accentVal === accent;
+    b.classList.toggle('active', isMatch);
+    const check = b.querySelector('span:last-child');
+    if (check) check.hidden = !isMatch;
+  });
+}
+
+/* ==========================================================================
+   SMART AUTH & LOGIN GATEWAY
+   ========================================================================== */
+function initAuthSystem() {
+  const savedMaster = localStorage.getItem('dika-hub-master-pass');
+  if (savedMaster) appState.masterPass = savedMaster;
+
+  try {
+    const supaRaw = localStorage.getItem('jurnal-supa-session');
+    if (supaRaw) {
+      appState.session = JSON.parse(supaRaw);
+      appState.isLoggedIn = true;
+      appState.authMethod = 'supa';
+    }
+  } catch (e) {}
+
+  try {
+    const localRaw = localStorage.getItem('dika-hub-local-session');
+    if (localRaw) {
+      appState.localUser = JSON.parse(localRaw);
+      appState.isLoggedIn = true;
+      appState.authMethod = 'local';
+    }
+  } catch (e) {}
+
+  const overlay = $('loginGatewayOverlay');
+  if (appState.isLoggedIn) {
+    overlay.hidden = true;
+  } else {
+    overlay.hidden = false;
+  }
+
+  updateAuthUI();
+
+  setupPasswordToggle('toggleGatewayPassBtn', 'gatewayPasswordInput', 'gatewayEyeIcon');
+  setupPasswordToggle('toggleOldPassBtn', 'oldPasswordInput');
+  setupPasswordToggle('toggleNewPassBtn', 'newPasswordInput');
+  setupPasswordToggle('toggleConfirmPassBtn', 'confirmNewPassInput');
+
+  $('gatewayPasswordInput').addEventListener('keyup', (e) => {
+    $('gatewayCapsLockWarning').hidden = !e.getModifierState('CapsLock');
+  });
+
+  $('tabGatewaySupa').addEventListener('click', () => {
+    playCyberSound('click');
+    setGatewayMethodTab('supa');
+  });
+  $('tabGatewayLocal').addEventListener('click', () => {
+    playCyberSound('click');
+    setGatewayMethodTab('local');
+  });
+
+  $('btnGatewayQuickFill').addEventListener('click', () => {
+    playCyberSound('click');
+    $('gatewayEmailInput').value = 'dika';
+    $('gatewayPasswordInput').value = appState.masterPass;
+    $('gatewayPasswordInput').focus();
+  });
+
+  $('gatewayLoginForm').addEventListener('submit', handleGatewayLoginSubmit);
+
+  $('btnContinueAsGuest').addEventListener('click', () => {
+    playCyberSound('success');
+    closeGatewayWithAnimation();
+    showToast('Selamat datang! Anda menjelajah dalam Mode Tamu.');
+  });
+
+  $('btnHeaderLogin').addEventListener('click', () => {
+    playCyberSound('click');
+    openGatewayScreen();
+  });
+
+  $('userProfileBtn').addEventListener('click', (e) => {
+    playCyberSound('click');
+    e.stopPropagation();
+    $('profileMenu').hidden = !$('profileMenu').hidden;
+  });
+
+  $('menuActionAddTask').addEventListener('click', () => {
+    $('profileMenu').hidden = true;
+    openTaskModal(null);
+  });
+
+  $('menuActionChangePass').addEventListener('click', () => {
+    $('profileMenu').hidden = true;
+    openChangePassModal();
+  });
+
+  $('menuActionLockPortal').addEventListener('click', () => {
+    $('profileMenu').hidden = true;
+    openGatewayScreen();
+  });
+
+  $('menuActionExportJson').addEventListener('click', () => {
+    $('profileMenu').hidden = true;
+    exportTasksJson();
+  });
+
+  $('menuActionLogout').addEventListener('click', () => {
+    $('profileMenu').hidden = true;
+    logoutUser();
+  });
+
+  $('closeChangePassBtn').addEventListener('click', () => $('changePassModal').hidden = true);
+  $('cancelChangePassBtn').addEventListener('click', () => $('changePassModal').hidden = true);
+  $('changePassForm').addEventListener('submit', handleChangePassSubmit);
+}
+
+function setupPasswordToggle(btnId, inputId, iconId) {
+  const btn = $(btnId);
+  const input = $(inputId);
+  if (!btn || !input) return;
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    playCyberSound('click');
+    const isPass = input.type === 'password';
+    input.type = isPass ? 'text' : 'password';
+    btn.innerHTML = isPass ? `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+        <line x1="1" y1="1" x2="23" y2="23"/>
+      </svg>` : `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>`;
+  });
+}
+
+function setGatewayMethodTab(method) {
+  appState.authMethod = method;
+  $('tabGatewaySupa').classList.toggle('active', method === 'supa');
+  $('tabGatewayLocal').classList.toggle('active', method === 'local');
+
+  if (method === 'supa') {
+    $('gatewayLabelUser').textContent = 'Email Pemilik (Supabase)';
+    $('gatewayEmailInput').type = 'email';
+    $('gatewayEmailInput').placeholder = 'dikaaryasaputra865@gmail.com';
+    $('gatewayHintBox').innerHTML = '💡 <strong>Cloud Supabase:</strong> Masuk dengan akun email Supabase Anda.';
+  } else {
+    $('gatewayLabelUser').textContent = 'Nama Pengguna / ID Pemilik';
+    $('gatewayEmailInput').type = 'text';
+    $('gatewayEmailInput').placeholder = 'dika';
+    $('gatewayHintBox').innerHTML = '💡 <strong>Master Password Lokal:</strong> Masukkan kata sandi <code>admin123</code> untuk mengelola tugas.';
+  }
+}
+
+function updateAuthUI() {
+  const isAuth = appState.isLoggedIn;
+  $('btnHeaderLogin').hidden = isAuth;
+  $('profilePillWrap').hidden = !isAuth;
+
+  if (isAuth) {
+    const isSupa = appState.authMethod === 'supa';
+    $('userDisplayName').textContent = 'Dika';
+    $('userRoleBadge').textContent = isSupa ? 'Pemilik (Cloud)' : 'Pemilik (Lokal)';
+    $('profileMenuName').textContent = 'Dika Arya Saputra';
+    $('profileMenuEmail').textContent = isSupa ? (appState.session?.email || 'dikaaryasaputra865@gmail.com') : 'Mode Offline / Lokal';
+  }
+
+  renderTugasView();
+}
+
+function openGatewayScreen() {
+  const overlay = $('loginGatewayOverlay');
+  overlay.classList.remove('closing');
+  overlay.hidden = false;
+  $('gatewayPasswordInput').value = '';
+  $('gatewayErrorAlert').hidden = true;
+  $('gatewayPasswordInput').focus();
+}
+
+function closeGatewayWithAnimation() {
+  const overlay = $('loginGatewayOverlay');
+  overlay.classList.add('closing');
+  setTimeout(() => {
+    overlay.hidden = true;
+    overlay.classList.remove('closing');
+  }, 350);
+}
+
+async function handleGatewayLoginSubmit(e) {
+  e.preventDefault();
+  const rawInput = $('gatewayEmailInput').value.trim();
+  const rawPass = $('gatewayPasswordInput').value;
+  const cleanPass = rawPass.trim();
+  const noSpacePass = cleanPass.replace(/\s+/g, '');
+  const alert = $('gatewayErrorAlert');
+  const btn = $('gatewaySubmitBtn');
+  const card = $('gatewayLoginCard');
+
+  alert.hidden = true;
+  btn.disabled = true;
+  $('gatewaySubmitText').textContent = 'Memverifikasi...';
+
+  try {
+    const isLocalPass = (cleanPass === appState.masterPass || 
+                         noSpacePass === 'admin123' || 
+                         cleanPass === 'admin123' ||
+                         noSpacePass === appState.masterPass.replace(/\s+/g, ''));
+
+    if (isLocalPass) {
+      const localSession = {
+        username: rawInput || 'dika',
+        loginTime: new Date().toISOString()
+      };
+      if ($('gatewayRememberMe').checked) {
+        localStorage.setItem('dika-hub-local-session', JSON.stringify(localSession));
+      }
+      appState.localUser = localSession;
+      appState.isLoggedIn = true;
+      appState.authMethod = 'local';
+
+      playCyberSound('success');
+      triggerConfetti();
+      closeGatewayWithAnimation();
+      updateAuthUI();
+      showToast('Berhasil masuk sebagai Pemilik!');
+      loadTasks();
+      return;
+    }
+
+    if (CONFIG.supabaseUrl && CONFIG.supabaseAnonKey && rawInput.includes('@')) {
+      const supaUrl = String(CONFIG.supabaseUrl).replace(/\/+$/, '');
+      const res = await fetch(supaUrl + '/auth/v1/token?grant_type=password', {
+        method: 'POST',
+        headers: { apikey: CONFIG.supabaseAnonKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: rawInput, password: rawPass })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const session = {
+          access_token: data.access_token,
+          refresh_token: data.refresh_token,
+          email: data.user?.email || rawInput,
+          expires_at: Math.floor(Date.now() / 1000) + (data.expires_in || 3600)
+        };
+        if ($('gatewayRememberMe').checked) {
+          localStorage.setItem('jurnal-supa-session', JSON.stringify(session));
+        }
+        appState.session = session;
+        appState.isLoggedIn = true;
+        appState.authMethod = 'supa';
+
+        playCyberSound('success');
+        triggerConfetti();
+        closeGatewayWithAnimation();
+        updateAuthUI();
+        showToast('Berhasil masuk lewat Cloud Supabase!');
+        loadTasks();
+        return;
+      }
+    }
+
+    throw new Error('Kata sandi salah. Gunakan sandi lokal: admin123');
+
+  } catch (err) {
+    alert.textContent = err.message || 'Kata sandi salah. Gunakan sandi: admin123';
+    alert.hidden = false;
+    card.classList.add('shake');
+    setTimeout(() => card.classList.remove('shake'), 500);
+  } finally {
+    btn.disabled = false;
+    $('gatewaySubmitText').textContent = '🔐 Masuk Sebagai Pemilik';
+  }
+}
+
+function logoutUser() {
+  localStorage.removeItem('jurnal-supa-session');
+  localStorage.removeItem('dika-hub-local-session');
+  appState.session = null;
+  appState.localUser = null;
+  appState.isLoggedIn = false;
+  updateAuthUI();
+  playCyberSound('click');
+  showToast('Berhasil keluar.');
+  openGatewayScreen();
+}
+
+function openChangePassModal() {
+  $('oldPasswordInput').value = '';
+  $('newPasswordInput').value = '';
+  $('confirmNewPassInput').value = '';
+  $('changePassErrAlert').hidden = true;
+  $('changePassModal').hidden = false;
+  $('oldPasswordInput').focus();
+}
+
+function handleChangePassSubmit(e) {
+  e.preventDefault();
+  const oldPass = $('oldPasswordInput').value.trim();
+  const newPass = $('newPasswordInput').value.trim();
+  const confirmPass = $('confirmNewPassInput').value.trim();
+  const alert = $('changePassErrAlert');
+
+  if (oldPass !== appState.masterPass && oldPass !== 'admin123') {
+    alert.textContent = 'Kata sandi saat ini salah!';
+    alert.hidden = false;
+    return;
+  }
+  if (newPass.length < 4) {
+    alert.textContent = 'Kata sandi baru minimal 4 karakter!';
+    alert.hidden = false;
+    return;
+  }
+  if (newPass !== confirmPass) {
+    alert.textContent = 'Konfirmasi kata sandi baru tidak cocok!';
+    alert.hidden = false;
+    return;
+  }
+
+  appState.masterPass = newPass;
+  localStorage.setItem('dika-hub-master-pass', newPass);
+  $('changePassModal').hidden = true;
+  playCyberSound('success');
+  showToast('Kata sandi master berhasil diubah!');
+}
+
+/* ==========================================================================
+   STUDY CHECKLIST FOR 16 MEETINGS & KPIS
+   ========================================================================== */
+function loadStudiedState() {
+  try {
+    const raw = localStorage.getItem('dika-hub-studied-meetings');
+    if (raw) appState.studiedMap = JSON.parse(raw);
+  } catch (e) {}
+}
+
+function saveStudiedState() {
+  localStorage.setItem('dika-hub-studied-meetings', JSON.stringify(appState.studiedMap));
+  updateHeaderGreetingAndKPIs();
+}
+
+window.toggleStudyMeeting = function(kode, isChecked) {
+  playCyberSound('click');
+  appState.studiedMap[kode] = isChecked;
+  saveStudiedState();
+  renderMateriList();
+  if (isChecked) triggerConfetti();
+  showToast(isChecked ? `Materi ${kode} selesai dipelajari! 🧠` : `Materi ${kode} belum selesai.`);
+};
+
+function updateHeaderGreetingAndKPIs() {
+  const hr = new Date().getHours();
+  let greet = 'Selamat Malam';
+  let emoji = '🌙';
+  if (hr >= 4 && hr < 11) { greet = 'Selamat Pagi'; emoji = '☀️'; }
+  else if (hr >= 11 && hr < 15) { greet = 'Selamat Siang'; emoji = '🌤️'; }
+  else if (hr >= 15 && hr < 18) { greet = 'Selamat Sore'; emoji = '🌇'; }
+
+  $('heroGreetingText').textContent = `${greet}, Dika!`;
+  $('heroGreetingBadge').querySelector('span:first-child').textContent = emoji;
+
+  const totalMateri = DATA.materi.length;
+  const passedMateri = DATA.materi.filter((x) => daysFrom(x.tanggal) <= 0).length;
+  const percentMateri = Math.round((passedMateri / totalMateri) * 100);
+  $('kpiMateriVal').textContent = `${passedMateri}/${totalMateri}`;
+  $('kpiMateriSub').textContent = `${percentMateri}% semester berjalan`;
+  $('kpiMateriBar').style.width = percentMateri + '%';
+
+  const studiedCount = Object.values(appState.studiedMap).filter(Boolean).length;
+  const percentStudied = Math.round((studiedCount / totalMateri) * 100);
+  $('kpiStudiedVal').textContent = `${studiedCount}/${totalMateri}`;
+  $('kpiStudiedSub').textContent = `${percentStudied}% materi dikuasai`;
+  $('kpiStudiedBar').style.width = percentStudied + '%';
+
+  const tasks = appState.tasks;
+  const totalTasks = tasks.length;
+  const doneTasks = tasks.filter((t) => DONE_STATUSES.includes(t.status)).length;
+  const percentTasks = totalTasks ? Math.round((doneTasks / totalTasks) * 100) : 0;
+  $('kpiTugasVal').textContent = `${doneTasks}/${totalTasks}`;
+  $('kpiTugasSub').textContent = totalTasks ? `${percentTasks}% terselesaikan` : 'Belum ada tugas dicatat';
+  $('kpiTugasBar').style.width = percentTasks + '%';
+  $('badgeTugasCount').textContent = totalTasks;
+
+  const openTasks = tasks
+    .filter((t) => !DONE_STATUSES.includes(t.status) && t.tenggat)
+    .sort((a, b) => a.tenggat.localeCompare(b.tenggat));
+
+  if (openTasks.length) {
+    const nextT = openTasks[0];
+    const d = daysFrom(nextT.tenggat);
+    $('kpiTenggatVal').textContent = nextT.kode || 'Tugas';
+    if (d < 0) {
+      $('kpiTenggatSub').textContent = `Terlambat ${Math.abs(d)} hari!`;
+      $('kpiTenggatBar').style.background = 'var(--status-danger)';
+    } else if (d === 0) {
+      $('kpiTenggatSub').textContent = 'Tenggat hari ini!';
+      $('kpiTenggatBar').style.background = 'var(--status-submitted)';
+    } else {
+      $('kpiTenggatSub').textContent = `${d} hari lagi`;
+      $('kpiTenggatBar').style.background = 'var(--accent-gradient)';
+    }
+  } else {
+    $('kpiTenggatVal').textContent = 'Aman';
+    $('kpiTenggatSub').textContent = totalTasks ? 'Semua tugas terkumpul 🎉' : 'Belum ada tugas';
+    $('kpiTenggatBar').style.background = 'var(--status-graded)';
+  }
+}
+
+/* ==========================================================================
+   MATERI ACCORDION & SEARCH
+   ========================================================================== */
+function initMateriSection() {
+  const tags = ['Semua'];
+  DATA.materi.forEach((m) => m.tag.forEach((t) => { if (!tags.includes(t)) tags.push(t); }));
+
+  const chipsBox = $('materiTagChips');
+  chipsBox.innerHTML = '';
+  tags.forEach((tag) => {
+    const btn = document.createElement('button');
+    btn.className = 'chip-btn' + (appState.materiTag === tag ? ' active' : '');
+    btn.textContent = tag;
+    btn.type = 'button';
+    btn.addEventListener('click', () => {
+      playCyberSound('click');
+      appState.materiTag = tag;
+      document.querySelectorAll('#materiTagChips .chip-btn').forEach((b) => b.classList.toggle('active', b.textContent === tag));
+      renderMateriList();
+    });
+    chipsBox.appendChild(btn);
+  });
+
+  $('materiSearchInput').addEventListener('input', (e) => {
+    appState.materiQuery = e.target.value.trim().toLowerCase();
+    renderMateriList();
+  });
+
+  loadStudiedState();
+  renderMateriList();
+}
+
+function renderMateriList() {
+  const container = $('materiListContainer');
+  const q = appState.materiQuery;
+  const tag = appState.materiTag;
+
+  const rows = DATA.materi.filter((m) => {
+    if (tag !== 'Semua' && !m.tag.includes(tag)) return false;
+    if (!q) return true;
+    const haystack = (m.kode + ' ' + m.judul + ' ' + m.ringkas + ' ' + m.poin.join(' ') + ' ' + m.tag.join(' ')).toLowerCase();
+    return haystack.includes(q);
+  });
+
+  if (!rows.length) {
+    container.innerHTML = `
+      <div style="text-align:center; padding:40px; color:var(--fg-muted);">
+        <div style="font-size:2rem; margin-bottom:8px;">🔍</div>
+        <div>Tidak ada materi yang sesuai dengan pencarian. Coba kata kunci lain.</div>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = rows.map((m) => {
+    const isSoon = daysFrom(m.tanggal) > 0;
+    const isToday = daysFrom(m.tanggal) === 0;
+    const isStudied = !!appState.studiedMap[m.kode];
+
+    return `
+      <details class="materi-card spotlight-card ${isStudied ? 'studied' : ''}">
+        <summary class="materi-summary">
+          <input type="checkbox" class="study-checkbox" title="Tandai sudah dipelajari" ${isStudied ? 'checked' : ''} onclick="event.stopPropagation(); toggleStudyMeeting('${m.kode}', this.checked)">
+          <span class="materi-code-badge">${m.kode}</span>
+          <div class="materi-header-info">
+            <div class="materi-title">${m.judul}</div>
+            <div class="materi-meta-tags">
+              ${m.tag.map((t) => `<span class="tag-badge ${t === 'Evaluasi' ? 'eval' : ''}">${t}</span>`).join('')}
+              ${isToday ? '<span class="tag-badge eval">📍 Pertemuan Pekan Ini</span>' : ''}
+              ${isStudied ? '<span class="tag-badge studied-badge">✓ Selesai Dipelajari</span>' : ''}
+              ${isSoon ? '<span class="tag-badge">Akan Datang</span>' : ''}
+            </div>
+          </div>
+          <span class="materi-date-text">${fmtDate(m.tanggal, true)}</span>
+        </summary>
+        <div class="materi-card-body">
+          <p class="materi-ringkas">${m.ringkas}</p>
+          ${m.poin.length ? `<ul class="materi-poin-list">${m.poin.map((p) => `<li>${p}</li>`).join('')}</ul>` : ''}
+          <div class="materi-actions-row">
+            <button class="resource-link-btn" type="button" onclick="speakMateri('${m.kode}', '${m.judul.replace(/'/g, "\\'")}', '${m.ringkas.replace(/'/g, "\\'")}')">🔊 Dengarkan Ringkasan</button>
+            <button class="resource-link-btn" type="button" onclick="copyMateriSummary('${m.kode}', '${m.judul.replace(/'/g, "\\'")}')">📋 Salin Rangkuman</button>
+            ${m.tautan && m.tautan.length ? m.tautan.map((l) => `<a class="resource-link-btn" href="${l.url}" target="_blank" rel="noopener noreferrer">🔗 ${l.label} ↗</a>`).join('') : ''}
+          </div>
+        </div>
+      </details>`;
+  }).join('');
+
+  initMouseSpotlight();
+}
+
+window.copyMateriSummary = function(kode, judul) {
+  playCyberSound('click');
+  const text = `${kode}: ${judul} - Dika-Hub SI Web & Mobile UMC`;
+  navigator.clipboard.writeText(text);
+  showToast('Ringkasan materi disalin ke clipboard! 📋');
+};
+
+/* ==========================================================================
+   TUGAS KULIAH (DRAG & DROP KANBAN)
+   ========================================================================== */
+function initTugasSection() {
+  $('btnViewKanban').addEventListener('click', () => {
+    playCyberSound('click');
+    appState.tugasView = 'kanban';
+    $('btnViewKanban').classList.add('active');
+    $('btnViewList').classList.remove('active');
+    $('tugasKanbanView').hidden = false;
+    $('tugasListView').hidden = true;
+    renderKanbanView();
+  });
+
+  $('btnViewList').addEventListener('click', () => {
+    playCyberSound('click');
+    appState.tugasView = 'list';
+    $('btnViewList').classList.add('active');
+    $('btnViewKanban').classList.remove('active');
+    $('tugasListView').hidden = false;
+    $('tugasKanbanView').hidden = true;
+  });
+
+  const opts = ['Semua', 'Belum Selesai', 'Selesai'];
+  const box = $('tugasStatusChips');
+  box.innerHTML = '';
+  opts.forEach((opt) => {
+    const btn = document.createElement('button');
+    btn.className = 'chip-btn' + (appState.tugasStatus === opt ? ' active' : '');
+    btn.textContent = opt;
+    btn.type = 'button';
+    btn.addEventListener('click', () => {
+      playCyberSound('click');
+      appState.tugasStatus = opt;
+      document.querySelectorAll('#tugasStatusChips .chip-btn').forEach((b) => b.classList.toggle('active', b.textContent === opt));
+      renderTugasView();
+    });
+    box.appendChild(btn);
+  });
+
+  $('btnOpenAddTask').addEventListener('click', () => {
+    playCyberSound('click');
+    if (!appState.isLoggedIn) {
+      showToast('Silakan masuk sebagai pemilik untuk menambah tugas.');
+      openGatewayScreen();
+      return;
+    }
+    openTaskModal(null);
+  });
+
+  $('closeTaskModalBtn').addEventListener('click', () => $('taskModal').hidden = true);
+  $('cancelTaskBtn').addEventListener('click', () => $('taskModal').hidden = true);
+  $('taskModalForm').addEventListener('submit', handleTaskSave);
+  initBerkasUploader();
+
+  loadTasks();
+}
+
+function loadTasks() {
+  if (CONFIG.supabaseUrl && CONFIG.supabaseAnonKey) {
+    const supaUrl = String(CONFIG.supabaseUrl).replace(/\/+$/, '');
+    const token = appState.session ? appState.session.access_token : CONFIG.supabaseAnonKey;
+
+    fetch(supaUrl + '/rest/v1/tugas?select=*&order=tenggat.asc', {
+      headers: { apikey: CONFIG.supabaseAnonKey, Authorization: 'Bearer ' + token }
+    })
+    .then((r) => { if (!r.ok) throw new Error('supa_err'); return r.json(); })
+    .then((data) => {
+      appState.tasks = data.map((d) => ({ ...d, berkas: Array.isArray(d.berkas) ? d.berkas : [] }));
+      appState.tasksLoaded = true;
+      renderTugasView();
+      updateHeaderGreetingAndKPIs();
+    })
+    .catch(() => loadLocalTasks());
+  } else {
+    loadLocalTasks();
+  }
+}
+
+function loadLocalTasks() {
+  const LOCAL_KEY = 'jurnal-tugas-local';
+  let data = [];
+  try {
+    const raw = localStorage.getItem(LOCAL_KEY);
+    if (raw) data = JSON.parse(raw);
+  } catch (e) {}
+
+  if (!Array.isArray(data) || !data.length) {
+    data = DEFAULT_TASKS.slice();
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(data));
+  }
+  appState.tasks = data;
+  appState.tasksLoaded = true;
+  renderTugasView();
+  updateHeaderGreetingAndKPIs();
+}
+
+function saveLocalTasks() {
+  localStorage.setItem('jurnal-tugas-local', JSON.stringify(appState.tasks));
+  renderTugasView();
+  updateHeaderGreetingAndKPIs();
+}
+
+function renderTugasView() {
+  renderKanbanView();
+  renderListView();
+  updateHeaderGreetingAndKPIs();
+}
+
+function renderKanbanView() {
+  const container = $('tugasKanbanView');
+  const cols = [
+    { key: 'belum', label: 'Belum Mulai', icon: '⚪' },
+    { key: 'dikerjakan', label: 'Dikerjakan', icon: '🔵' },
+    { key: 'dikumpulkan', label: 'Dikumpulkan', icon: '🟠' },
+    { key: 'dinilai', label: 'Dinilai', icon: '🟢' }
+  ];
+
+  container.innerHTML = cols.map((c) => {
+    const list = appState.tasks.filter((t) => t.status === c.key);
+    return `
+      <div class="kanban-col" data-status="${c.key}" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, '${c.key}')">
+        <div class="kanban-col-header">
+          <div class="kanban-col-title">${c.icon} ${c.label}</div>
+          <span class="kanban-badge">${list.length}</span>
+        </div>
+        <div class="kanban-cards-box">
+          ${list.map((t) => `
+            <div class="kanban-card" draggable="${appState.isLoggedIn ? 'true' : 'false'}" ondragstart="handleDragStart(event, '${t.id}')" ondragend="handleDragEnd(event)">
+              <div class="kanban-card-title">${t.judul}</div>
+              ${t.deskripsi ? `<div class="kanban-card-desc">${t.deskripsi}</div>` : ''}
+              ${renderBerkasChips(t)}
+              <div class="kanban-card-footer">
+                <span>${t.kode || '-'}</span>
+                <span>📅 ${fmtDate(t.tenggat)}</span>
+              </div>
+              ${appState.isLoggedIn ? `
+                <div style="display:flex; justify-content:space-between; margin-top:4px;">
+                  <button class="action-link" type="button" onclick="editTask('${t.id}')">Ubah</button>
+                  <button class="action-link danger" type="button" onclick="deleteTask('${t.id}')">Hapus</button>
+                </div>` : ''}
+            </div>`).join('')}
+          ${!list.length ? '<div style="font-size:0.75rem; color:var(--fg-subtle); text-align:center; padding:24px 0;">Tarik kartu ke sini</div>' : ''}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+let draggedTaskId = null;
+window.handleDragStart = function(e, id) {
+  if (!appState.isLoggedIn) return;
+  draggedTaskId = id;
+  e.target.classList.add('dragging');
+  playCyberSound('click');
+};
+window.handleDragEnd = function(e) {
+  e.target.classList.remove('dragging');
+  document.querySelectorAll('.kanban-col').forEach((col) => col.classList.remove('drag-over'));
+};
+window.handleDragOver = function(e) {
+  if (!appState.isLoggedIn) return;
+  e.preventDefault();
+  e.currentTarget.classList.add('drag-over');
+};
+window.handleDragLeave = function(e) {
+  e.currentTarget.classList.remove('drag-over');
+};
+window.handleDrop = function(e, targetStatus) {
+  if (!appState.isLoggedIn || !draggedTaskId) return;
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+
+  const task = appState.tasks.find((t) => t.id === draggedTaskId);
+  if (task && task.status !== targetStatus) {
+    task.status = targetStatus;
+    playCyberSound('drop');
+    if (DONE_STATUSES.includes(targetStatus)) {
+      triggerConfetti();
+    }
+    saveLocalTasks();
+    syncTaskCloud(task, false);
+    showToast(`Status ${task.kode || 'tugas'} dipindah ke "${STATUS_LABEL[targetStatus]}"`);
+  }
+  draggedTaskId = null;
+};
+
+function renderListView() {
+  const container = $('tugasListView');
+  const statusFilter = appState.tugasStatus;
+
+  const rows = appState.tasks.filter((t) => {
+    if (statusFilter === 'Selesai') return DONE_STATUSES.includes(t.status);
+    if (statusFilter === 'Belum Selesai') return !DONE_STATUSES.includes(t.status);
     return true;
   }).sort((a, b) => (a.tenggat || '9999').localeCompare(b.tenggat || '9999'));
+
   if (!rows.length) {
-    box.appendChild(el('p', 'empty', tasks.length ? 'Belum ada tugas pada kategori ini.' : (editable ? 'Belum ada tugas. Tekan Tambah tugas untuk mencatat yang pertama.' : 'Belum ada tugas yang dicatat.')));
+    container.innerHTML = `
+      <div style="text-align:center; padding:48px; background:var(--bg-surface); border:1px solid var(--border-line); border-radius:var(--radius-lg); color:var(--fg-muted);">
+        <div style="font-size:2rem; margin-bottom:8px;">📝</div>
+        <div>Tidak ada tugas pada kategori ini.</div>
+      </div>`;
     return;
   }
-  const list = el('div', 'list');
-  rows.forEach((t) => {
-    const r = el('div', 'task');
-    r.appendChild(el('span', 'item-code', t.kode || '-'));
-    const main = el('div', 'task-main');
-    const h = el('h3', 'task-title', t.judul || '(tanpa judul)');
-    if (t.contoh) h.appendChild(el('span', 'tag soon', 'contoh'));
-    main.appendChild(h);
-    if (t.deskripsi) main.appendChild(el('p', 'task-desc', t.deskripsi));
-    if (t.pertemuan) main.appendChild(el('div', 'task-ref', 'Terkait ' + t.pertemuan));
-    const files = [];
-    (Array.isArray(t.berkas) ? t.berkas : []).forEach((b) => {
-      if (b && mode === 'supa' && b.id) files.push({ href: supaPublic(b.id), label: b.nama || 'Berkas', size: fmtSize(b.ukuran) });
-      else if (b && /^[0-9a-f]{32}$/.test(b.id)) files.push({ b: b, label: b.nama || 'Berkas', size: fmtSize(b.ukuran) });
-    });
-    if (t.tautan && /^https?:\/\//i.test(t.tautan)) files.push({ href: t.tautan, label: 'Tautan berkas', size: '' });
-    if (files.length) {
-      const ul = el('ul', 'links filelinks');
-      files.forEach((f) => {
-        const li = el('li');
-        if (f.href) {
-          const a = el('a', null, f.label + ' ↗');
-          a.href = f.href; a.target = '_blank'; a.rel = 'noopener noreferrer';
-          li.appendChild(a);
-        } else if (downloadsApi) {
-          const bt = el('button', 'link-btn', 'Unduh ' + f.label);
-          bt.type = 'button';
-          bt.addEventListener('click', () => downloadFile(f.b));
-          li.appendChild(bt);
-        } else {
-          li.appendChild(el('span', null, f.label));
-        }
-        if (f.size) li.appendChild(el('span', 'fsize', ' ' + f.size));
-        ul.appendChild(li);
-      });
-      main.appendChild(ul);
-    }
-    if (editable) {
-      const act = el('div', 'task-actions');
-      const eb = el('button', 'link-btn', 'Ubah');
-      eb.type = 'button';
-      eb.addEventListener('click', () => openForm(t));
-      act.appendChild(eb);
-      if (confirmId === t.id) {
-        const yes = el('button', 'link-btn danger', 'Yakin hapus?');
-        yes.type = 'button';
-        yes.addEventListener('click', () => removeTask(t.id));
-        const no = el('button', 'link-btn', 'Batal');
-        no.type = 'button';
-        no.addEventListener('click', () => { confirmId = null; renderTugas(); });
-        act.appendChild(yes); act.appendChild(no);
-      } else {
-        const del = el('button', 'link-btn', 'Hapus');
-        del.type = 'button';
-        del.addEventListener('click', () => { confirmId = t.id; renderTugas(); });
-        act.appendChild(del);
-      }
-      main.appendChild(act);
-    }
-    r.appendChild(main);
-    const due = el('div', 'due', t.tenggat ? fmt(t.tenggat, false) : 'Tanpa tenggat');
-    if (t.tenggat) {
-      const d = daysFrom(t.tenggat);
-      let cls = '', txt = '';
-      if (DONE.includes(t.status)) { txt = 'Sudah terkumpul'; }
-      else if (d < 0) { cls = 'late'; txt = 'Terlambat ' + Math.abs(d) + ' hari'; }
-      else if (d === 0) { cls = 'near'; txt = 'Hari ini'; }
-      else { cls = d <= 7 ? 'near' : ''; txt = d + ' hari lagi'; }
-      due.appendChild(el('small', cls, txt));
-    }
-    r.appendChild(due);
-    if (editable) {
-      const sel = document.createElement('select');
-      sel.className = 'status-select';
-      sel.id = 'st-' + t.id;
-      sel.setAttribute('aria-label', 'Status ' + (t.kode || t.judul || 'tugas'));
-      sel.setAttribute('data-s', t.status);
-      Object.keys(STATUS_LABEL).forEach((k) => {
-        const o = document.createElement('option');
-        o.value = k; o.textContent = STATUS_LABEL[k];
-        if (k === t.status) o.selected = true;
-        sel.appendChild(o);
-      });
-      sel.addEventListener('change', () => changeStatus(t.id, sel.value));
-      r.appendChild(sel);
+
+  container.innerHTML = rows.map((t) => {
+    const isDone = DONE_STATUSES.includes(t.status);
+    const d = daysFrom(t.tenggat);
+    let deadlineTxt = fmtDate(t.tenggat);
+    let subTxt = '';
+    let subClass = '';
+
+    if (isDone) {
+      subTxt = 'Sudah selesai';
+    } else if (d < 0) {
+      subTxt = `Terlambat ${Math.abs(d)} hari`;
+      subClass = 'late';
+    } else if (d === 0) {
+      subTxt = 'Hari ini!';
+      subClass = 'near';
     } else {
-      const p = el('span', 'pill', STATUS_LABEL[t.status] || t.status || 'Belum mulai');
-      p.setAttribute('data-s', t.status);
-      r.appendChild(p);
+      subTxt = `${d} hari lagi`;
+      subClass = d <= 3 ? 'near' : '';
     }
-    list.appendChild(r);
+
+    const editActions = appState.isLoggedIn ? `
+      <div class="task-actions-row">
+        <button class="action-link" type="button" onclick="editTask('${t.id}')">Ubah</button>
+        <button class="action-link danger" type="button" onclick="deleteTask('${t.id}')">Hapus</button>
+      </div>` : '';
+
+    return `
+      <div class="task-row-card spotlight-card">
+        <span class="task-code-badge">${t.kode || '-'}</span>
+        <div class="task-main-col">
+          <div class="task-title-line">${t.judul}</div>
+          ${t.deskripsi ? `<div class="task-desc-line">${t.deskripsi}</div>` : ''}
+          <div class="task-sub-meta">
+            ${t.pertemuan ? `<span>📌 Terkait ${t.pertemuan}</span>` : ''}
+            ${t.tautan ? `<a href="${t.tautan}" target="_blank" rel="noopener noreferrer">🔗 Tautan Tugas ↗</a>` : ''}
+          </div>
+          ${renderBerkasChips(t)}
+          <div class="task-sub-meta" hidden>
+          </div>
+          ${editActions}
+        </div>
+        <div class="task-deadline-col">
+          <div>${deadlineTxt}</div>
+          <small class="${subClass}">${subTxt}</small>
+        </div>
+        <div class="task-status-col">
+          ${appState.isLoggedIn ? `
+            <select class="select-input" style="height:34px; padding:0 8px; font-size:0.75rem; font-family:var(--font-mono);" onchange="updateTaskStatus('${t.id}', this.value)">
+              <option value="belum" ${t.status === 'belum' ? 'selected' : ''}>Belum mulai</option>
+              <option value="dikerjakan" ${t.status === 'dikerjakan' ? 'selected' : ''}>Dikerjakan</option>
+              <option value="dikumpulkan" ${t.status === 'dikumpulkan' ? 'selected' : ''}>Dikumpulkan</option>
+              <option value="dinilai" ${t.status === 'dinilai' ? 'selected' : ''}>Dinilai</option>
+            </select>` : `
+            <span class="status-pill" data-s="${t.status}">${STATUS_LABEL[t.status] || t.status}</span>`}
+        </div>
+      </div>`;
+  }).join('');
+
+  initMouseSpotlight();
+}
+
+window.editTask = function(id) {
+  playCyberSound('click');
+  const task = appState.tasks.find((t) => t.id === id);
+  if (task) openTaskModal(task);
+};
+
+window.deleteTask = function(id) {
+  playCyberSound('click');
+  if (!confirm('Yakin ingin menghapus tugas ini?')) return;
+  const removed = appState.tasks.find((t) => t.id === id);
+  if (removed) (removed.berkas || []).forEach(deleteBerkas);
+  if (supaReady()) supaRequest('DELETE', '?id=eq.' + encodeURIComponent(id)).catch(() => {});
+  appState.tasks = appState.tasks.filter((t) => t.id !== id);
+  saveLocalTasks();
+  showToast('Tugas berhasil dihapus.');
+};
+
+window.updateTaskStatus = function(id, newStatus) {
+  playCyberSound('click');
+  const task = appState.tasks.find((t) => t.id === id);
+  if (task) {
+    task.status = newStatus;
+    if (DONE_STATUSES.includes(newStatus)) triggerConfetti();
+    saveLocalTasks();
+    syncTaskCloud(task, false);
+    showToast(`Status tugas diubah menjadi "${STATUS_LABEL[newStatus]}"`);
+  }
+};
+
+function openTaskModal(task) {
+  appState.editingTaskId = task ? task.id : null;
+  $('taskModalTitle').textContent = task ? 'Ubah Tugas' : 'Tambah Tugas Baru';
+  $('fJudul').value = task ? (task.judul || '') : '';
+  $('fDeskripsi').value = task ? (task.deskripsi || '') : '';
+  $('fTenggat').value = task ? (task.tenggat || '') : '';
+  $('fStatus').value = task ? (task.status || 'belum') : 'belum';
+  $('fPertemuan').value = task ? (task.pertemuan || '') : '';
+  $('fKode').value = task ? (task.kode || '') : '';
+  $('fTautan').value = task ? (task.tautan || '') : '';
+  $('taskFormErrAlert').hidden = true;
+  appState.formFiles = task && Array.isArray(task.berkas) ? task.berkas.slice() : [];
+  appState.pendingFiles = [];
+  appState.removedFiles = [];
+  renderFormFiles();
+  $('taskModal').hidden = false;
+  $('fJudul').focus();
+}
+
+/* ==========================================================================
+   UPLOAD BERKAS TUGAS (PDF / WORD / POWERPOINT)
+   - Mode Cloud Supabase : file ke Supabase Storage (bucket "tugas-berkas")
+   - Mode Lokal          : file disimpan di IndexedDB browser
+   ========================================================================== */
+const BERKAS_BUCKET = 'tugas-berkas';
+const BERKAS_MAX = 20 * 1024 * 1024;
+const BERKAS_MIME = {
+  pdf: 'application/pdf',
+  doc: 'application/msword',
+  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ppt: 'application/vnd.ms-powerpoint',
+  pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+};
+
+function escBerkas(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function fmtSize(n) { return n < 1048576 ? Math.max(1, Math.round(n / 1024)) + ' KB' : (n / 1048576).toFixed(1) + ' MB'; }
+function berkasExt(name) { return (String(name).split('.').pop() || '').toLowerCase(); }
+function berkasIcon(name) { const e = berkasExt(name); return e === 'pdf' ? '📕' : e.startsWith('doc') ? '📘' : '📙'; }
+function supaReady() {
+  return appState.authMethod === 'supa' && appState.session && CONFIG.supabaseUrl && CONFIG.supabaseAnonKey;
+}
+function supaBase() { return String(CONFIG.supabaseUrl).replace(/\/+$/, ''); }
+
+/* --- IndexedDB (mode lokal) --- */
+function idbOpen() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open('dika-hub-berkas', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('files');
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
   });
-  box.appendChild(list);
 }
+function idbRun(mode, fn) {
+  return idbOpen().then((db) => new Promise((res, rej) => {
+    const tx = db.transaction('files', mode);
+    const req = fn(tx.objectStore('files'));
+    tx.oncomplete = () => res(req && req.result);
+    tx.onerror = () => rej(tx.error);
+  }));
+}
+const idbPut = (k, blob) => idbRun('readwrite', (s) => s.put(blob, k));
+const idbGet = (k) => idbRun('readonly', (s) => s.get(k));
+const idbDel = (k) => idbRun('readwrite', (s) => s.delete(k));
 
-/* Penyimpanan tugas: db Claude bila tersedia, localStorage untuk versi mandiri */
-function makeDbStore(db) {
-  const col = db.collection('tugas');
-  return {
-    add: (d) => col.add(d),
-    patch: (id, d) => col.doc(id).update(d),
-    remove: (id) => col.doc(id).delete(),
-    start() {
-      col.onSnapshot((snap) => {
-        tasks = snap.docs.map((d) => Object.assign({ id: d.id }, d.data()));
-        tasksLoaded = true; tasksError = '';
-        renderAllTugas();
-      }, () => {
-        tasksLoaded = true;
-        tasksError = 'Daftar tugas tidak dapat dimuat pada tampilan ini.';
-        renderAllTugas();
-      });
-    }
-  };
-}
-function makeLocalStore() {
-  const KEY = 'jurnal-tugas';
-  let list = [];
-  try { const raw = localStorage.getItem(KEY); if (raw) { const p = JSON.parse(raw); if (Array.isArray(p)) list = p; } } catch (e) {}
-  const save = () => {
-    try { localStorage.setItem(KEY, JSON.stringify(list)); } catch (e) {}
-    tasks = list.slice();
-    renderAllTugas();
-  };
-  return {
-    add: async (d) => { list.push(Object.assign({ id: 't' + Date.now().toString(36) }, d)); save(); },
-    patch: async (id, d) => { list = list.map((t) => (t.id === id ? Object.assign({}, t, d) : t)); save(); },
-    remove: async (id) => { list = list.filter((t) => t.id !== id); save(); },
-    start() { tasks = list.slice(); tasksLoaded = true; renderAllTugas(); }
-  };
-}
-/* Mode Supabase: dipakai bila config.js terisi dan halaman dibuka di luar Claude */
-function supaBase() { return String(CONFIG.supabaseUrl || '').replace(/\/+$/, ''); }
-function supaPublic(path) { return supaBase() + '/storage/v1/object/public/berkas/' + path; }
-function loadSession() {
-  try { const raw = localStorage.getItem('jurnal-supa-session'); session = raw ? JSON.parse(raw) : null; } catch (e) { session = null; }
-}
-function saveSession(sn) {
-  session = sn;
-  try { if (sn) localStorage.setItem('jurnal-supa-session', JSON.stringify(sn)); else localStorage.removeItem('jurnal-supa-session'); } catch (e) {}
-}
-function toSession(j) {
-  return { access_token: j.access_token, refresh_token: j.refresh_token, expires_at: j.expires_at || (Math.floor(Date.now() / 1000) + (j.expires_in || 3600)) };
-}
-async function supaRefresh() {
-  if (!session || !session.refresh_token) return;
-  if (session.expires_at && Date.now() / 1000 < session.expires_at - 60) return;
-  try {
-    const res = await fetch(supaBase() + '/auth/v1/token?grant_type=refresh_token', {
-      method: 'POST',
-      headers: { apikey: CONFIG.supabaseAnonKey, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refresh_token: session.refresh_token })
-    });
-    if (!res.ok) throw new Error('refresh');
-    saveSession(toSession(await res.json()));
-  } catch (e) {
-    saveSession(null);
-    canWrite = false;
-    renderAllTugas();
-  }
-}
-async function supaFetch(path, opts) {
-  await supaRefresh();
-  const o = opts || {};
-  const headers = Object.assign({
-    apikey: CONFIG.supabaseAnonKey,
-    Authorization: 'Bearer ' + (session ? session.access_token : CONFIG.supabaseAnonKey)
-  }, o.headers || {});
-  const res = await fetch(supaBase() + path, Object.assign({}, o, { headers: headers }));
-  if (!res.ok) {
-  console.error('Detail error Supabase:', res.status, await res.clone().text());
-    let msg = '';
-    try { const b = await res.clone().json(); msg = String(b.message || b.error || ''); } catch (e) {}
-    const err = new Error('http ' + res.status);
-    if (res.status === 401 || res.status === 403 || /row-level security|jwt|not authorized/i.test(msg)) err.code = 'invalid_argument';
-    else if (res.status === 413) err.code = 'too_large';
-    else err.code = 'unavailable';
-    throw err;
-  }
-  return res;
-}
-function makeSupaStore() {
-  const JSON_H = { 'Content-Type': 'application/json', Prefer: 'return=minimal' };
-  const load = async () => {
-    try {
-      const res = await supaFetch('/rest/v1/tugas?select=*&order=tenggat.asc');
-      const rows = await res.json();
-      tasks = rows.map((r) => Object.assign({}, r, { berkas: Array.isArray(r.berkas) ? r.berkas : [] }));
-      tasksLoaded = true; tasksError = '';
-      renderAllTugas();
-    } catch (e) {
-      if (e.code === 'invalid_argument' && session) { saveSession(null); canWrite = false; return load(); }
-      throw e;
-    }
-  };
-  return {
-    add: async (d) => { await supaFetch('/rest/v1/tugas', { method: 'POST', headers: JSON_H, body: JSON.stringify(d) }); await load(); },
-    patch: async (id, d) => { await supaFetch('/rest/v1/tugas?id=eq.' + encodeURIComponent(id), { method: 'PATCH', headers: JSON_H, body: JSON.stringify(d) }); await load(); },
-    remove: async (id) => { await supaFetch('/rest/v1/tugas?id=eq.' + encodeURIComponent(id), { method: 'DELETE' }); await load(); },
-    start() {
-      load().catch(() => {
-        tasksLoaded = true;
-        tasksError = 'Daftar tugas tidak dapat dimuat. Periksa config.js, tabel di Supabase, dan koneksi internet.';
-        renderAllTugas();
-      });
-      window.addEventListener('focus', () => { load().catch(() => {}); });
-    }
-  };
-}
-
-function makeSupaAssets() {
-  return {
-    upload: async (file, options = {}) => {
-      const safe = file.name
-        .replace(/[^A-Za-z0-9._-]+/g, '-')
-        .replace(/^-+/, '')
-        .slice(-80) || 'berkas';
-
-      const path = Date.now().toString(36) + '-' + safe;
-      const contentType =
-        options.type || file.type || 'application/octet-stream';
-
-      await supaFetch('/storage/v1/object/berkas/' + path, {
-        method: 'POST',
-        headers: {
-          'Content-Type': contentType,
-          'x-upsert': 'false'
-        },
-        body: file
-      });
-
-      return {
-        id: path,
-        sizeBytes: file.size,
-        contentType: contentType
-      };
+/* --- Supabase REST (sinkron tugas) --- */
+async function supaRequest(method, query, body) {
+  const res = await fetch(supaBase() + '/rest/v1/tugas' + query, {
+    method,
+    headers: {
+      apikey: CONFIG.supabaseAnonKey,
+      Authorization: 'Bearer ' + appState.session.access_token,
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation'
     },
-
-    delete: (path) =>
-      supaFetch(
-        '/storage/v1/object/berkas/' + encodeURIComponent(path),
-        { method: 'DELETE' }
-      ).then(() => ({ deleted: true }))
-  };
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if (!res.ok) throw new Error('supa_' + res.status);
+  return res.status === 204 ? [] : res.json();
 }
-
-function renderAuth() {
-  const b = $('authBtn');
-  b.hidden = mode !== 'supa';
-  b.textContent = session ? 'Keluar' : 'Masuk pemilik';
-}
-$('authBtn').addEventListener('click', () => {
-  if (session) {
-    saveSession(null);
-    canWrite = false;
-    closeForm();
-    renderAllTugas();
-  } else {
-    $('loginForm').hidden = false;
-    $('l-email').focus();
-  }
-});
-$('loginCancel').addEventListener('click', () => { $('loginForm').hidden = true; });
-$('loginForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const err = $('loginErr');
-  err.hidden = true;
-  const btn = $('loginSubmit');
-  btn.disabled = true;
+async function syncTaskCloud(task, isNew) {
+  if (!supaReady()) return true;
   try {
-    const res = await fetch(supaBase() + '/auth/v1/token?grant_type=password', {
-      method: 'POST',
-      headers: { apikey: CONFIG.supabaseAnonKey, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: $('l-email').value.trim(), password: $('l-pass').value })
-    });
-    if (!res.ok) throw new Error('login');
-    saveSession(toSession(await res.json()));
-    $('l-pass').value = '';
-    $('loginForm').hidden = true;
-    canWrite = true;
-    renderAllTugas();
-  } catch (ex) {
-    err.textContent = 'Email atau kata sandi salah, atau koneksi bermasalah.';
-    err.hidden = false;
-  }
-  btn.disabled = false;
-});
-
-async function initStore() {
-  let db = null, user = null;
-  try {
-    if (window.claude && window.claude.use) {
-      db = await window.claude.use('db');
-      user = await window.claude.use('user');
+    const { id, ...fields } = task;
+    if (isNew) {
+      let rows;
+      try { rows = await supaRequest('POST', '', fields); }
+      catch (e) { rows = await supaRequest('POST', '', task); }
+      if (rows && rows[0] && rows[0].id !== undefined) task.id = rows[0].id;
+    } else {
+      await supaRequest('PATCH', '?id=eq.' + encodeURIComponent(id), fields);
     }
-  } catch (e) { db = null; }
-  if (db) {
-    mode = 'db';
-    store = makeDbStore(db);
-    try { assetsApi = await window.claude.use('assets'); } catch (e) { assetsApi = null; }
-    try { downloadsApi = await window.claude.use('downloads'); } catch (e) { downloadsApi = null; }
-    try { canWrite = user ? await user.canEdit() : false; } catch (e) { canWrite = false; }
-    store.start();
-  } else if (window.claude) {
-    tasksLoaded = true;
-    tasksError = 'Daftar tugas hanya dapat dimuat bila Anda masuk ke akun Claude yang diberi akses ke halaman ini.';
-    renderAllTugas();
-  } else if (CONFIG.supabaseUrl && CONFIG.supabaseAnonKey) {
-    mode = 'supa';
-    loadSession();
-    canWrite = !!session;
-    assetsApi = makeSupaAssets();
-    store = makeSupaStore();
-    store.start();
-  } else {
-    mode = 'lokal';
-    canWrite = true;
-    store = makeLocalStore();
-    store.start();
+    return true;
+  } catch (e) { return false; }
+}
+
+/* --- Upload / hapus / buka berkas --- */
+async function uploadBerkas(file, taskId) {
+  const id = 'f_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const meta = { id, name: file.name, size: file.size, type: BERKAS_MIME[berkasExt(file.name)] || file.type, uploadedAt: new Date().toISOString() };
+  if (supaReady()) {
+    const path = `${taskId}/${id}-${file.name.replace(/[^\w.\-]+/g, '_')}`;
+    const res = await fetch(`${supaBase()}/storage/v1/object/${BERKAS_BUCKET}/${path}`, {
+      method: 'POST',
+      headers: { apikey: CONFIG.supabaseAnonKey, Authorization: 'Bearer ' + appState.session.access_token, 'Content-Type': meta.type },
+      body: file
+    });
+    if (!res.ok) throw new Error('upload_' + res.status);
+    return { ...meta, storage: 'supa', path, url: `${supaBase()}/storage/v1/object/public/${BERKAS_BUCKET}/${path}` };
+  }
+  await idbPut(id, file);
+  return { ...meta, storage: 'local' };
+}
+
+async function deleteBerkas(b) {
+  try {
+    if (b.storage === 'supa' && supaReady()) {
+      await fetch(`${supaBase()}/storage/v1/object/${BERKAS_BUCKET}/${b.path}`, {
+        method: 'DELETE',
+        headers: { apikey: CONFIG.supabaseAnonKey, Authorization: 'Bearer ' + appState.session.access_token }
+      });
+    } else if (b.storage === 'local') {
+      await idbDel(b.id);
+    }
+  } catch (e) {}
+}
+
+window.openBerkas = async function(taskId, fileId) {
+  playCyberSound('click');
+  const t = appState.tasks.find((x) => String(x.id) === String(taskId));
+  const b = t && (t.berkas || []).find((x) => x.id === fileId);
+  if (!b) return;
+  if (b.url) { window.open(b.url, '_blank', 'noopener'); return; }
+  try {
+    const blob = await idbGet(b.id);
+    if (!blob) throw new Error('missing');
+    const u = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = u; a.download = b.name; a.click();
+    setTimeout(() => URL.revokeObjectURL(u), 10000);
+  } catch (e) {
+    showToast('File tidak ditemukan. File mode lokal hanya ada di browser tempat diunggah.');
+  }
+};
+
+function renderBerkasChips(t) {
+  const list = Array.isArray(t.berkas) ? t.berkas : [];
+  if (!list.length) return '';
+  return '<div class="file-chips">' + list.map((b) =>
+    `<button type="button" class="file-chip" onclick="event.stopPropagation(); openBerkas('${escBerkas(t.id)}','${escBerkas(b.id)}')" title="${escBerkas(b.name)} · ${fmtSize(b.size)}">${berkasIcon(b.name)} ${escBerkas(b.name)}</button>`
+  ).join('') + '</div>';
+}
+
+/* --- UI form upload --- */
+function showFormErr(m) { const a = $('taskFormErrAlert'); a.textContent = m; a.hidden = false; }
+
+function fileRowHtml(name, size, key, tag) {
+  return `<div class="file-item"><span>${berkasIcon(name)}</span><span class="fi-name">${escBerkas(name)}</span><span class="fi-size">${fmtSize(size)}${tag}</span><button type="button" class="action-link danger" data-rm="${key}">Hapus</button></div>`;
+}
+
+function renderFormFiles() {
+  const rows = [];
+  appState.formFiles.forEach((b, i) => rows.push(fileRowHtml(b.name, b.size, 'old:' + i, '')));
+  appState.pendingFiles.forEach((f, i) => rows.push(fileRowHtml(f.name, f.size, 'new:' + i, ' · baru')));
+  $('fileListBox').innerHTML = rows.join('');
+  $('fileStorageHint').textContent = supaReady()
+    ? '☁️ File disimpan di Cloud Supabase dan bisa dibuka semua pengunjung.'
+    : '💾 Mode lokal: file hanya tersimpan di browser ini. Masuk lewat Cloud Supabase agar file bisa diakses semua orang.';
+}
+
+function addPendingFiles(fileList) {
+  $('taskFormErrAlert').hidden = true;
+  Array.from(fileList).forEach((f) => {
+    if (!BERKAS_MIME[berkasExt(f.name)]) { showFormErr(`"${f.name}" ditolak: hanya PDF, Word (.doc/.docx), atau PowerPoint (.ppt/.pptx).`); return; }
+    if (f.size > BERKAS_MAX) { showFormErr(`"${f.name}" terlalu besar (maks. 20 MB).`); return; }
+    appState.pendingFiles.push(f);
+  });
+  renderFormFiles();
+}
+
+function initBerkasUploader() {
+  const zone = $('fileDropZone'), input = $('fBerkasInput');
+  zone.addEventListener('click', () => input.click());
+  zone.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); } });
+  input.addEventListener('change', () => { addPendingFiles(input.files); input.value = ''; });
+  ['dragenter', 'dragover'].forEach((ev) => zone.addEventListener(ev, (e) => { e.preventDefault(); zone.classList.add('drag'); }));
+  ['dragleave', 'drop'].forEach((ev) => zone.addEventListener(ev, (e) => { e.preventDefault(); zone.classList.remove('drag'); }));
+  zone.addEventListener('drop', (e) => addPendingFiles(e.dataTransfer.files));
+  $('fileListBox').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-rm]');
+    if (!btn) return;
+    const [kind, i] = btn.dataset.rm.split(':');
+    if (kind === 'old') appState.removedFiles.push(appState.formFiles.splice(+i, 1)[0]);
+    else appState.pendingFiles.splice(+i, 1);
+    renderFormFiles();
+  });
+}
+
+async function handleTaskSave(e) {
+  e.preventDefault();
+  const judul = $('fJudul').value.trim();
+  const tenggat = $('fTenggat').value;
+  if (!judul || !tenggat) {
+    $('taskFormErrAlert').textContent = 'Judul dan tenggat tugas wajib diisi.';
+    $('taskFormErrAlert').hidden = false;
+    return;
+  }
+
+  const saveBtn = $('saveTaskBtn');
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Menyimpan...';
+  const isEdit = !!appState.editingTaskId;
+  const taskId = isEdit ? appState.editingTaskId : 't_' + Date.now().toString(36);
+
+  try {
+    const berkas = appState.formFiles.slice();
+    const failed = [];
+    for (const f of appState.pendingFiles) {
+      try { berkas.push(await uploadBerkas(f, taskId)); } catch (err) { failed.push(f.name); }
+    }
+    for (const b of appState.removedFiles) await deleteBerkas(b);
+
+    const payload = {
+      judul: judul,
+      deskripsi: $('fDeskripsi').value.trim(),
+      tenggat: tenggat,
+      status: $('fStatus').value,
+      pertemuan: $('fPertemuan').value.trim(),
+      kode: $('fKode').value.trim() || `T${appState.tasks.length + 1}`,
+      tautan: $('fTautan').value.trim(),
+      berkas: berkas
+    };
+
+    let task;
+    if (isEdit) {
+      const idx = appState.tasks.findIndex((t) => t.id === taskId);
+      if (idx !== -1) { appState.tasks[idx] = { ...appState.tasks[idx], ...payload }; task = appState.tasks[idx]; }
+    } else {
+      payload.id = taskId;
+      appState.tasks.push(payload);
+      task = payload;
+    }
+
+    const synced = task ? await syncTaskCloud(task, !isEdit) : true;
+    saveLocalTasks();
+    $('taskModal').hidden = true;
+    playCyberSound('success');
+    triggerConfetti();
+    showToast(isEdit ? 'Tugas berhasil diperbarui!' : 'Tugas baru berhasil ditambahkan!');
+    if (failed.length) showToast(`Gagal mengunggah: ${failed.join(', ')}. Pastikan bucket "${BERKAS_BUCKET}" sudah dibuat (lihat supabase-setup.sql).`);
+    if (!synced) showToast('Tersimpan di perangkat ini, tetapi gagal sinkron ke Cloud. Cek policy tabel "tugas".');
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Simpan Tugas';
   }
 }
 
-/* Tentang */
-function renderAbout() {
+function exportTasksJson() {
+  playCyberSound('click');
+  const blob = new Blob([JSON.stringify(appState.tasks, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `dika-hub-tugas-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Cadangan data berhasil diunduh (JSON).');
+}
+
+/* ==========================================================================
+   FLOATING TOOLS: QUICK NOTES SCRATCHPAD & POMODORO
+   ========================================================================== */
+function initFloatingTools() {
+  const savedNotes = localStorage.getItem('dika-hub-quick-notes');
+  if (savedNotes) $('notesTextarea').value = savedNotes;
+
+  $('btnToggleNotes').addEventListener('click', () => {
+    playCyberSound('click');
+    const drawer = $('notesDrawer');
+    drawer.hidden = !drawer.hidden;
+    if (!drawer.hidden) $('notesTextarea').focus();
+  });
+
+  $('btnCloseNotes').addEventListener('click', () => {
+    playCyberSound('click');
+    $('notesDrawer').hidden = true;
+  });
+
+  let notesSaveTimeout;
+  $('notesTextarea').addEventListener('input', (e) => {
+    $('notesSavedIndicator').textContent = 'Menyimpan...';
+    clearTimeout(notesSaveTimeout);
+    notesSaveTimeout = setTimeout(() => {
+      localStorage.setItem('dika-hub-quick-notes', e.target.value);
+      $('notesSavedIndicator').textContent = 'Tersimpan otomatis ✓';
+    }, 400);
+  });
+
+  $('btnClearNotes').addEventListener('click', () => {
+    if (confirm('Hapus seluruh catatan kuliah cepat ini?')) {
+      $('notesTextarea').value = '';
+      localStorage.removeItem('dika-hub-quick-notes');
+      $('notesSavedIndicator').textContent = 'Catatan kosong';
+      showToast('Catatan dihapus.');
+    }
+  });
+
+  // Pomodoro
+  let pomoSeconds = 25 * 60;
+  let pomoTimer = null;
+  let isPomoRunning = false;
+
+  $('openPomodoroBtn').addEventListener('click', () => {
+    playCyberSound('click');
+    $('pomodoroModal').hidden = false;
+  });
+  $('closePomoBtn').addEventListener('click', () => {
+    $('pomodoroModal').hidden = true;
+  });
+
+  function updatePomoDisplay() {
+    const m = String(Math.floor(pomoSeconds / 60)).padStart(2, '0');
+    const s = String(pomoSeconds % 60).padStart(2, '0');
+    $('pomoTimerDisplay').textContent = `${m}:${s}`;
+  }
+
+  $('btnPomoStart').addEventListener('click', () => {
+    playCyberSound('click');
+    if (!isPomoRunning) {
+      isPomoRunning = true;
+      $('btnPomoStart').textContent = 'Jeda (Pause)';
+      pomoTimer = setInterval(() => {
+        if (pomoSeconds > 0) {
+          pomoSeconds--;
+          updatePomoDisplay();
+        } else {
+          clearInterval(pomoTimer);
+          isPomoRunning = false;
+          playCyberSound('success');
+          triggerConfetti();
+          showToast('Waktu fokus selesai! Istirahat 5 menit ☕');
+          $('btnPomoStart').textContent = 'Mulai Sesi Baru';
+          pomoSeconds = 25 * 60;
+          updatePomoDisplay();
+        }
+      }, 1000);
+    } else {
+      isPomoRunning = false;
+      clearInterval(pomoTimer);
+      $('btnPomoStart').textContent = 'Lanjutkan';
+    }
+  });
+
+  $('btnPomoReset').addEventListener('click', () => {
+    playCyberSound('click');
+    clearInterval(pomoTimer);
+    isPomoRunning = false;
+    pomoSeconds = 25 * 60;
+    updatePomoDisplay();
+    $('btnPomoStart').textContent = 'Mulai Fokus';
+  });
+}
+
+/* ==========================================================================
+   TENTANG & PROFIL RENDERING
+   ========================================================================== */
+function initAboutSection() {
   const m = DATA.meta;
-  const rows = [['Nama', m.nama], ['Program', m.prodi], ['Fakultas', m.fakultas], ['Kampus', m.kampus], ['Kelas', m.kelas], ['Mata kuliah', m.matkul], ['Semester', m.semester]];
-  const dl = $('facts');
-  dl.textContent = '';
-  rows.forEach((r) => { dl.appendChild(el('dt', null, r[0])); dl.appendChild(el('dd', null, r[1])); });
+  const rows = [
+    ['Nama Lengkap', m.nama + ' Arya Saputra'],
+    ['Program Studi', m.prodi],
+    ['Fakultas', m.fakultas],
+    ['Kampus', m.kampus],
+    ['Kelas', m.kelas],
+    ['Semester', m.semester],
+    ['Mata Kuliah', m.matkul]
+  ];
+
+  $('factsListContainer').innerHTML = rows.map(([k, v]) => `
+    <dt class="facts-dt">${k}</dt>
+    <dd class="facts-dd">${v}</dd>
+  `).join('');
 }
 
-/* Tab */
-function showTab(name) {
-  if (!TABS.includes(name)) name = 'materi';
-  state.tab = name;
-  TABS.forEach((t) => {
-    const sel = t === name;
-    $('tab-' + t).setAttribute('aria-selected', String(sel));
-    $('tab-' + t).tabIndex = sel ? 0 : -1;
-    $('panel-' + t).hidden = !sel;
+function showToast(msg) {
+  const container = $('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast-msg';
+  toast.innerHTML = `<span>✨</span><span>${msg}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(10px)';
+    setTimeout(() => toast.remove(), 300);
+  }, 3500);
+}
+
+function showTab(tab) {
+  const tabs = ['materi', 'tugas', 'tentang'];
+  appState.activeTab = tab;
+  tabs.forEach((t) => {
+    const b = $('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+    const p = $('panel' + t.charAt(0).toUpperCase() + t.slice(1));
+    const isMatch = t === tab;
+    b.classList.toggle('active', isMatch);
+    p.hidden = !isMatch;
+  });
+  if (tab === 'tugas') renderTugasView();
+}
+
+function initTabs() {
+  const tabs = ['materi', 'tugas', 'tentang'];
+  tabs.forEach((tab) => {
+    const btn = $('tab' + tab.charAt(0).toUpperCase() + tab.slice(1));
+    btn.addEventListener('click', () => {
+      playCyberSound('click');
+      showTab(tab);
+    });
   });
 }
-document.querySelectorAll('.tab').forEach((b) => {
-  b.addEventListener('click', () => showTab(b.dataset.tab));
-  b.addEventListener('keydown', (e) => {
-    const i = TABS.indexOf(b.dataset.tab);
-    let n = -1;
-    if (e.key === 'ArrowRight') n = (i + 1) % TABS.length;
-    if (e.key === 'ArrowLeft') n = (i + TABS.length - 1) % TABS.length;
-    if (n >= 0) { showTab(TABS[n]); $('tab-' + TABS[n]).focus(); e.preventDefault(); }
-  });
-});
-$('q').addEventListener('input', (e) => { state.q = e.target.value; renderMateri(); });
-window.addEventListener('hashchange', () => showTab(location.hash.slice(1)));
 
-/* Tema */
-function effectiveTheme() {
-  const t = document.documentElement.getAttribute('data-theme');
-  if (t) return t;
-  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+/* ==========================================================================
+   APPLICATION ENTRYPOINT
+   ========================================================================== */
+function initApp() {
+  initAmbientCanvas();
+  initLiveClock();
+  initThemeAndPalette();
+  initTabs();
+  initAuthSystem();
+  initCommandPalette();
+  initMateriSection();
+  initTugasSection();
+  initAboutSection();
+  initFloatingTools();
+  initMouseSpotlight();
+  updateHeaderGreetingAndKPIs();
 }
-function paintThemeBtn() { $('themeBtn').textContent = effectiveTheme() === 'dark' ? 'Mode terang' : 'Mode gelap'; }
-$('themeBtn').addEventListener('click', () => {
-  const next = effectiveTheme() === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  try { localStorage.setItem('jurnal-theme', next); } catch (e) {}
-  paintThemeBtn();
-});
-try {
-  const saved = localStorage.getItem('jurnal-theme');
-  if (saved === 'light' || saved === 'dark') document.documentElement.setAttribute('data-theme', saved);
-} catch (e) {}
 
-renderHeader();
-renderTagChips();
-renderMateri();
-renderStatusChips();
-buildStatusOptions();
-renderAllTugas();
-renderAbout();
-paintThemeBtn();
-showTab(location.hash.slice(1) || 'materi');
-initStore();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
 </script>
-
 </body>
 </html>
