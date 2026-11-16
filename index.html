@@ -1053,6 +1053,19 @@ a:hover { text-decoration: underline; }
 .file-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .file-chip{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:4px 10px;border:1px solid var(--accent-border);border-radius:var(--radius-full);background:var(--accent-soft);color:var(--fg-main);font-size:.75rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:all var(--trans-fast)}
 .file-chip:hover{background:var(--accent);color:#fff}
+
+/* ===== Berkas Materi per Pertemuan ===== */
+.materi-files{margin-top:16px;padding-top:14px;border-top:1px dashed var(--border-line)}
+.materi-files-title{font-size:.8125rem;font-weight:700;color:var(--fg-main);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.materi-files-empty{font-size:.8125rem;color:var(--fg-subtle)}
+.materi-file-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.materi-file-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.materi-file-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--border-line);border-radius:var(--radius-sm);background:var(--bg-surface-subtle);font-size:.8125rem}
+.materi-file-item .mf-open{flex:1;min-width:0;text-align:left;color:var(--accent);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.materi-file-item .mf-open:hover{text-decoration:underline}
+.materi-file-item .mf-size{color:var(--fg-subtle);font-family:var(--font-mono);font-size:.6875rem;white-space:nowrap}
+.materi-upload-hint{font-size:.6875rem;color:var(--fg-subtle);margin-top:6px}
+.materi-upload-btn[disabled]{opacity:.6;cursor:wait}
 </style>
 </head>
 <body>
@@ -1359,6 +1372,11 @@ a:hover { text-decoration: underline; }
         <span class="search-kbd-hint">Ctrl K</span>
       </div>
       <div class="chips-row" id="materiTagChips"></div>
+      <div>
+        <button class="btn-primary" id="btnOpenAddMateri" type="button" hidden>
+          <span>➕</span> Tambah Materi
+        </button>
+      </div>
     </div>
     <div class="materi-list" id="materiListContainer"></div>
   </section>
@@ -1626,6 +1644,68 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
+<!-- FORM MATERI MODAL -->
+<div class="modal-backdrop" id="materiModal" hidden>
+  <div class="modal-box" style="max-width: 600px;">
+    <div class="modal-header">
+      <div class="modal-title-area">
+        <div class="modal-icon-badge">📖</div>
+        <div class="modal-title" id="materiModalTitle">Tambah Materi Baru</div>
+      </div>
+      <button class="modal-close-btn" id="closeMateriModalBtn" type="button">✕</button>
+    </div>
+
+    <form id="materiModalForm">
+      <div class="modal-body">
+        <div class="form-grid">
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+            <label class="input-label" for="mKode">
+              <span>Kode Pertemuan</span>
+              <input class="text-input" type="text" id="mKode" maxlength="10" placeholder="Otomatis (mis. P17)">
+            </label>
+            <label class="input-label" for="mTanggal">
+              <span>Tanggal Pertemuan *</span>
+              <input class="text-input" type="date" id="mTanggal" required>
+            </label>
+          </div>
+
+          <label class="input-label" for="mJudul">
+            <span>Judul Materi *</span>
+            <input class="text-input" type="text" id="mJudul" required maxlength="140" placeholder="mis. Progressive Web App">
+          </label>
+
+          <label class="input-label" for="mTag">
+            <span>Kategori / Tag (pisahkan dengan koma)</span>
+            <input class="text-input" type="text" id="mTag" maxlength="80" placeholder="mis. Web, Mobile">
+          </label>
+
+          <label class="input-label" for="mRingkas">
+            <span>Ringkasan</span>
+            <textarea class="textarea-input" id="mRingkas" maxlength="400" placeholder="Gambaran singkat isi pertemuan..."></textarea>
+          </label>
+
+          <label class="input-label" for="mPoin">
+            <span>Poin Pembahasan (satu poin per baris)</span>
+            <textarea class="textarea-input" id="mPoin" maxlength="1000" placeholder="Service worker&#10;Manifest aplikasi"></textarea>
+          </label>
+
+          <label class="input-label" for="mTautan">
+            <span>Tautan Referensi (satu per baris: Label | https://...)</span>
+            <textarea class="textarea-input" id="mTautan" maxlength="600" placeholder="MDN PWA | https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps"></textarea>
+          </label>
+
+          <div id="materiFormErrAlert" style="color:var(--status-danger); font-size:0.8125rem;" hidden></div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="cyber-icon-btn" id="cancelMateriBtn" type="button">Batal</button>
+        <button class="btn-primary" id="saveMateriBtn" type="submit">Simpan Materi</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="config.js"></script>
@@ -1789,8 +1869,15 @@ const appState = {
   removedFiles: [],
   soundEnabled: true,
   studiedMap: {},
+  materiFiles: {},
+  customMateri: [],
+  editingMateriKode: null,
   cmdIndex: 0
 };
+
+function getAllMateri() {
+  return DATA.materi.concat(appState.customMateri).slice().sort((a, b) => a.tanggal.localeCompare(b.tanggal) || a.kode.localeCompare(b.kode));
+}
 
 /* ==========================================================================
    DYNAMIC MOUSE SPOTLIGHT EFFECT ON CARDS
@@ -2353,6 +2440,7 @@ function updateAuthUI() {
   const isAuth = appState.isLoggedIn;
   $('btnHeaderLogin').hidden = isAuth;
   $('profilePillWrap').hidden = !isAuth;
+  $('btnOpenAddMateri').hidden = !isAuth;
 
   if (isAuth) {
     const isSupa = appState.authMethod === 'supa';
@@ -2363,6 +2451,7 @@ function updateAuthUI() {
   }
 
   renderTugasView();
+  renderMateriList();
 }
 
 function openGatewayScreen() {
@@ -2554,8 +2643,10 @@ function updateHeaderGreetingAndKPIs() {
   $('heroGreetingText').textContent = `${greet}, Dika!`;
   $('heroGreetingBadge').querySelector('span:first-child').textContent = emoji;
 
-  const totalMateri = DATA.materi.length;
-  const passedMateri = DATA.materi.filter((x) => daysFrom(x.tanggal) <= 0).length;
+  const allMateri = getAllMateri();
+  const totalMateri = allMateri.length;
+  $('badgeMateriCount').textContent = totalMateri;
+  const passedMateri = allMateri.filter((x) => daysFrom(x.tanggal) <= 0).length;
   const percentMateri = Math.round((passedMateri / totalMateri) * 100);
   $('kpiMateriVal').textContent = `${passedMateri}/${totalMateri}`;
   $('kpiMateriSub').textContent = `${percentMateri}% semester berjalan`;
@@ -2604,9 +2695,10 @@ function updateHeaderGreetingAndKPIs() {
 /* ==========================================================================
    MATERI ACCORDION & SEARCH
    ========================================================================== */
-function initMateriSection() {
+function renderMateriChips() {
   const tags = ['Semua'];
-  DATA.materi.forEach((m) => m.tag.forEach((t) => { if (!tags.includes(t)) tags.push(t); }));
+  getAllMateri().forEach((m) => m.tag.forEach((t) => { if (!tags.includes(t)) tags.push(t); }));
+  if (!tags.includes(appState.materiTag)) appState.materiTag = 'Semua';
 
   const chipsBox = $('materiTagChips');
   chipsBox.innerHTML = '';
@@ -2623,22 +2715,219 @@ function initMateriSection() {
     });
     chipsBox.appendChild(btn);
   });
+}
+
+function initMateriSection() {
+  renderMateriChips();
 
   $('materiSearchInput').addEventListener('input', (e) => {
     appState.materiQuery = e.target.value.trim().toLowerCase();
     renderMateriList();
   });
 
+  $('btnOpenAddMateri').addEventListener('click', () => {
+    playCyberSound('click');
+    openMateriModal(null);
+  });
+  $('closeMateriModalBtn').addEventListener('click', () => $('materiModal').hidden = true);
+  $('cancelMateriBtn').addEventListener('click', () => $('materiModal').hidden = true);
+  $('materiModalForm').addEventListener('submit', handleMateriSave);
+
   loadStudiedState();
   renderMateriList();
 }
+
+/* ==========================================================================
+   MATERI KUSTOM (TAMBAH / UBAH / HAPUS OLEH PEMILIK)
+   - Lokal : localStorage "dika-hub-materi-kustom"
+   - Cloud : tabel Supabase "materi_kustom" (kode, data jsonb)
+   ========================================================================== */
+const MATERI_CUSTOM_KEY = 'dika-hub-materi-kustom';
+
+function loadCustomMateri() {
+  let local = [];
+  try { local = JSON.parse(localStorage.getItem(MATERI_CUSTOM_KEY) || '[]'); } catch (e) {}
+  if (!Array.isArray(local)) local = [];
+  appState.customMateri = local;
+  renderMateriChips();
+  renderMateriList();
+  updateHeaderGreetingAndKPIs();
+
+  if (CONFIG.supabaseUrl && CONFIG.supabaseAnonKey) {
+    const token = appState.session ? appState.session.access_token : CONFIG.supabaseAnonKey;
+    fetch(supaBase() + '/rest/v1/materi_kustom?select=*', {
+      headers: { apikey: CONFIG.supabaseAnonKey, Authorization: 'Bearer ' + token }
+    })
+    .then((r) => { if (!r.ok) throw new Error('supa_err'); return r.json(); })
+    .then((rows) => {
+      const cloud = rows.map((r) => ({ ...r.data, kode: r.kode, custom: true })).filter((m) => m && m.judul);
+      const cloudKodes = new Set(cloud.map((m) => m.kode));
+      // materi yang dibuat saat mode lokal tetap dipertahankan di browser ini
+      const localOnly = local.filter((m) => m.local && !cloudKodes.has(m.kode));
+      appState.customMateri = cloud.concat(localOnly);
+      renderMateriChips();
+      renderMateriList();
+      updateHeaderGreetingAndKPIs();
+    })
+    .catch(() => {});
+  }
+}
+
+function saveCustomLocal() {
+  try { localStorage.setItem(MATERI_CUSTOM_KEY, JSON.stringify(appState.customMateri)); } catch (e) {}
+}
+
+async function syncCustomMateriCloud(item, isDelete) {
+  if (!supaReady()) return true;
+  try {
+    const headers = {
+      apikey: CONFIG.supabaseAnonKey,
+      Authorization: 'Bearer ' + appState.session.access_token,
+      'Content-Type': 'application/json'
+    };
+    if (isDelete) {
+      const res = await fetch(supaBase() + '/rest/v1/materi_kustom?kode=eq.' + encodeURIComponent(item.kode), { method: 'DELETE', headers });
+      return res.ok;
+    }
+    const { kode, custom, local, ...data } = item;
+    const res = await fetch(supaBase() + '/rest/v1/materi_kustom?on_conflict=kode', {
+      method: 'POST',
+      headers: { ...headers, Prefer: 'resolution=merge-duplicates,return=minimal' },
+      body: JSON.stringify({ kode, data })
+    });
+    return res.ok;
+  } catch (e) { return false; }
+}
+
+function openMateriModal(item) {
+  appState.editingMateriKode = item ? item.kode : null;
+  $('materiModalTitle').textContent = item ? 'Ubah Materi' : 'Tambah Materi Baru';
+  $('mKode').value = item ? item.kode : '';
+  $('mKode').readOnly = !!item;
+  $('mTanggal').value = item ? item.tanggal : '';
+  $('mJudul').value = item ? item.judul : '';
+  $('mTag').value = item ? item.tag.join(', ') : '';
+  $('mRingkas').value = item ? item.ringkas : '';
+  $('mPoin').value = item ? item.poin.join('\n') : '';
+  $('mTautan').value = item ? (item.tautan || []).map((l) => `${l.label} | ${l.url}`).join('\n') : '';
+  $('materiFormErrAlert').hidden = true;
+  $('materiModal').hidden = false;
+  $('mJudul').focus();
+}
+
+function showMateriErr(msg) {
+  const a = $('materiFormErrAlert');
+  a.textContent = msg;
+  a.hidden = false;
+}
+
+async function handleMateriSave(e) {
+  e.preventDefault();
+  const isEdit = !!appState.editingMateriKode;
+  const judul = $('mJudul').value.trim();
+  const tanggal = $('mTanggal').value;
+  if (!judul || !tanggal) { showMateriErr('Judul dan tanggal pertemuan wajib diisi.'); return; }
+
+  const all = getAllMateri();
+  let kode = isEdit ? appState.editingMateriKode : $('mKode').value.trim().replace(/[^\w-]+/g, '');
+  if (!isEdit) {
+    if (!kode) {
+      let n = all.length + 1;
+      do { kode = 'P' + String(n++).padStart(2, '0'); } while (all.some((m) => m.kode === kode));
+    } else if (all.some((m) => m.kode === kode)) {
+      showMateriErr(`Kode "${kode}" sudah dipakai pertemuan lain.`);
+      return;
+    }
+  }
+
+  const tautan = [];
+  for (const line of $('mTautan').value.split('\n').map((s) => s.trim()).filter(Boolean)) {
+    const parts = line.split('|').map((s) => s.trim());
+    const url = parts.length > 1 ? parts[parts.length - 1] : parts[0];
+    const label = parts.length > 1 ? parts.slice(0, -1).join(' | ') : url;
+    if (!/^https?:\/\//i.test(url)) { showMateriErr(`Tautan tidak valid: "${line}". Gunakan alamat yang diawali http:// atau https://`); return; }
+    tautan.push({ label, url });
+  }
+
+  const item = {
+    kode,
+    tanggal,
+    judul,
+    tag: $('mTag').value.split(',').map((s) => s.trim()).filter(Boolean),
+    ringkas: $('mRingkas').value.trim(),
+    poin: $('mPoin').value.split('\n').map((s) => s.trim()).filter(Boolean),
+    tautan,
+    custom: true
+  };
+  if (!item.tag.length) item.tag = ['Materi Tambahan'];
+  if (!supaReady()) item.local = true;
+
+  const saveBtn = $('saveMateriBtn');
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Menyimpan...';
+  try {
+    const idx = appState.customMateri.findIndex((m) => m.kode === kode);
+    if (idx !== -1) appState.customMateri[idx] = item; else appState.customMateri.push(item);
+    saveCustomLocal();
+    const synced = await syncCustomMateriCloud(item, false);
+    $('materiModal').hidden = true;
+    renderMateriChips();
+    renderMateriList();
+    updateHeaderGreetingAndKPIs();
+    playCyberSound('success');
+    triggerConfetti();
+    showToast(isEdit ? `Materi ${kode} diperbarui!` : `Materi ${kode} berhasil ditambahkan!`);
+    if (!synced) showToast('Tersimpan di perangkat ini, tetapi gagal sinkron ke Cloud. Cek tabel "materi_kustom" (lihat supabase-materi-kustom.sql).');
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Simpan Materi';
+  }
+}
+
+window.editMateri = function(kode) {
+  playCyberSound('click');
+  const item = appState.customMateri.find((m) => m.kode === kode);
+  if (item && appState.isLoggedIn) openMateriModal(item);
+};
+
+window.deleteMateri = async function(kode) {
+  playCyberSound('click');
+  if (!appState.isLoggedIn) return;
+  const item = appState.customMateri.find((m) => m.kode === kode);
+  if (!item || !confirm(`Hapus materi ${kode}: "${item.judul}" beserta berkas di dalamnya?`)) return;
+  for (const b of (appState.materiFiles[kode] || [])) await deleteBerkas(b);
+  delete appState.materiFiles[kode];
+  try { localStorage.setItem(MATERI_LOCAL_KEY, JSON.stringify(appState.materiFiles)); } catch (e) {}
+  if (supaReady()) {
+    fetch(supaBase() + '/rest/v1/materi_berkas?kode=eq.' + encodeURIComponent(kode), {
+      method: 'DELETE',
+      headers: { apikey: CONFIG.supabaseAnonKey, Authorization: 'Bearer ' + appState.session.access_token }
+    }).catch(() => {});
+  }
+  appState.customMateri = appState.customMateri.filter((m) => m.kode !== kode);
+  saveCustomLocal();
+  await syncCustomMateriCloud(item, true);
+  renderMateriChips();
+  renderMateriList();
+  updateHeaderGreetingAndKPIs();
+  showToast(`Materi ${kode} dihapus.`);
+};
+
+window.speakMateriByKode = function(kode) {
+  const m = getAllMateri().find((x) => x.kode === kode);
+  if (m) speakMateri(m.kode, m.judul, m.ringkas);
+};
+window.copyMateriByKode = function(kode) {
+  const m = getAllMateri().find((x) => x.kode === kode);
+  if (m) copyMateriSummary(m.kode, m.judul);
+};
 
 function renderMateriList() {
   const container = $('materiListContainer');
   const q = appState.materiQuery;
   const tag = appState.materiTag;
 
-  const rows = DATA.materi.filter((m) => {
+  const rows = getAllMateri().filter((m) => {
     if (tag !== 'Semua' && !m.tag.includes(tag)) return false;
     if (!q) return true;
     const haystack = (m.kode + ' ' + m.judul + ' ' + m.ringkas + ' ' + m.poin.join(' ') + ' ' + m.tag.join(' ')).toLowerCase();
@@ -2654,20 +2943,22 @@ function renderMateriList() {
     return;
   }
 
+  const openKodes = new Set(Array.from(container.querySelectorAll('details[open]')).map((d) => d.dataset.kode));
+
   container.innerHTML = rows.map((m) => {
     const isSoon = daysFrom(m.tanggal) > 0;
     const isToday = daysFrom(m.tanggal) === 0;
     const isStudied = !!appState.studiedMap[m.kode];
 
     return `
-      <details class="materi-card spotlight-card ${isStudied ? 'studied' : ''}">
+      <details class="materi-card spotlight-card ${isStudied ? 'studied' : ''}" data-kode="${m.kode}" ${openKodes.has(m.kode) ? 'open' : ''}>
         <summary class="materi-summary">
           <input type="checkbox" class="study-checkbox" title="Tandai sudah dipelajari" ${isStudied ? 'checked' : ''} onclick="event.stopPropagation(); toggleStudyMeeting('${m.kode}', this.checked)">
           <span class="materi-code-badge">${m.kode}</span>
           <div class="materi-header-info">
-            <div class="materi-title">${m.judul}</div>
+            <div class="materi-title">${escBerkas(m.judul)}</div>
             <div class="materi-meta-tags">
-              ${m.tag.map((t) => `<span class="tag-badge ${t === 'Evaluasi' ? 'eval' : ''}">${t}</span>`).join('')}
+              ${m.tag.map((t) => `<span class="tag-badge ${t === 'Evaluasi' ? 'eval' : ''}">${escBerkas(t)}</span>`).join('')}
               ${isToday ? '<span class="tag-badge eval">📍 Pertemuan Pekan Ini</span>' : ''}
               ${isStudied ? '<span class="tag-badge studied-badge">✓ Selesai Dipelajari</span>' : ''}
               ${isSoon ? '<span class="tag-badge">Akan Datang</span>' : ''}
@@ -2676,13 +2967,17 @@ function renderMateriList() {
           <span class="materi-date-text">${fmtDate(m.tanggal, true)}</span>
         </summary>
         <div class="materi-card-body">
-          <p class="materi-ringkas">${m.ringkas}</p>
-          ${m.poin.length ? `<ul class="materi-poin-list">${m.poin.map((p) => `<li>${p}</li>`).join('')}</ul>` : ''}
+          ${m.ringkas ? `<p class="materi-ringkas">${escBerkas(m.ringkas)}</p>` : ''}
+          ${m.poin.length ? `<ul class="materi-poin-list">${m.poin.map((p) => `<li>${escBerkas(p)}</li>`).join('')}</ul>` : ''}
           <div class="materi-actions-row">
-            <button class="resource-link-btn" type="button" onclick="speakMateri('${m.kode}', '${m.judul.replace(/'/g, "\\'")}', '${m.ringkas.replace(/'/g, "\\'")}')">🔊 Dengarkan Ringkasan</button>
-            <button class="resource-link-btn" type="button" onclick="copyMateriSummary('${m.kode}', '${m.judul.replace(/'/g, "\\'")}')">📋 Salin Rangkuman</button>
-            ${m.tautan && m.tautan.length ? m.tautan.map((l) => `<a class="resource-link-btn" href="${l.url}" target="_blank" rel="noopener noreferrer">🔗 ${l.label} ↗</a>`).join('') : ''}
+            <button class="resource-link-btn" type="button" onclick="speakMateriByKode('${m.kode}')">🔊 Dengarkan Ringkasan</button>
+            <button class="resource-link-btn" type="button" onclick="copyMateriByKode('${m.kode}')">📋 Salin Rangkuman</button>
+            ${m.tautan && m.tautan.length ? m.tautan.map((l) => `<a class="resource-link-btn" href="${escBerkas(l.url)}" target="_blank" rel="noopener noreferrer">🔗 ${escBerkas(l.label)} ↗</a>`).join('') : ''}
+            ${m.custom && appState.isLoggedIn ? `
+              <button class="resource-link-btn" type="button" onclick="editMateri('${m.kode}')">✏️ Ubah Materi</button>
+              <button class="resource-link-btn" type="button" style="color:var(--status-danger);" onclick="deleteMateri('${m.kode}')">🗑️ Hapus Materi</button>` : ''}
           </div>
+          ${renderMateriFilesSection(m.kode)}
         </div>
       </details>`;
   }).join('');
@@ -2756,6 +3051,8 @@ function initTugasSection() {
 }
 
 function loadTasks() {
+  loadCustomMateri();
+  loadMateriFiles();
   if (CONFIG.supabaseUrl && CONFIG.supabaseAnonKey) {
     const supaUrl = String(CONFIG.supabaseUrl).replace(/\/+$/, '');
     const token = appState.session ? appState.session.access_token : CONFIG.supabaseAnonKey;
@@ -3124,6 +3421,10 @@ window.openBerkas = async function(taskId, fileId) {
   playCyberSound('click');
   const t = appState.tasks.find((x) => String(x.id) === String(taskId));
   const b = t && (t.berkas || []).find((x) => x.id === fileId);
+  openBerkasMeta(b);
+};
+
+async function openBerkasMeta(b) {
   if (!b) return;
   if (b.url) { window.open(b.url, '_blank', 'noopener'); return; }
   try {
@@ -3136,6 +3437,145 @@ window.openBerkas = async function(taskId, fileId) {
   } catch (e) {
     showToast('File tidak ditemukan. File mode lokal hanya ada di browser tempat diunggah.');
   }
+}
+
+/* ==========================================================================
+   BERKAS MATERI PER PERTEMUAN (PDF / WORD / POWERPOINT)
+   - Metadata lokal : localStorage "dika-hub-materi-berkas"
+   - Metadata cloud : tabel Supabase "materi_berkas" (kode, berkas jsonb)
+   - Isi file       : sama seperti tugas (Supabase Storage / IndexedDB)
+   ========================================================================== */
+const MATERI_LOCAL_KEY = 'dika-hub-materi-berkas';
+
+function loadMateriFiles() {
+  let local = {};
+  try { local = JSON.parse(localStorage.getItem(MATERI_LOCAL_KEY) || '{}') || {}; } catch (e) {}
+  appState.materiFiles = local;
+  renderMateriList();
+
+  if (CONFIG.supabaseUrl && CONFIG.supabaseAnonKey) {
+    const token = appState.session ? appState.session.access_token : CONFIG.supabaseAnonKey;
+    fetch(supaBase() + '/rest/v1/materi_berkas?select=*', {
+      headers: { apikey: CONFIG.supabaseAnonKey, Authorization: 'Bearer ' + token }
+    })
+    .then((r) => { if (!r.ok) throw new Error('supa_err'); return r.json(); })
+    .then((rows) => {
+      const merged = {};
+      rows.forEach((r) => { merged[r.kode] = Array.isArray(r.berkas) ? r.berkas : []; });
+      // berkas yang hanya ada di browser ini (mode lokal) tetap dipertahankan
+      Object.keys(local).forEach((k) => {
+        const localOnly = (local[k] || []).filter((b) => b.storage === 'local');
+        if (localOnly.length) merged[k] = (merged[k] || []).concat(localOnly);
+      });
+      appState.materiFiles = merged;
+      renderMateriList();
+    })
+    .catch(() => {});
+  }
+}
+
+async function persistMateriFiles(kode) {
+  try { localStorage.setItem(MATERI_LOCAL_KEY, JSON.stringify(appState.materiFiles)); } catch (e) {}
+  if (!supaReady()) return true;
+  try {
+    const cloudOnly = (appState.materiFiles[kode] || []).filter((b) => b.storage === 'supa');
+    const res = await fetch(supaBase() + '/rest/v1/materi_berkas?on_conflict=kode', {
+      method: 'POST',
+      headers: {
+        apikey: CONFIG.supabaseAnonKey,
+        Authorization: 'Bearer ' + appState.session.access_token,
+        'Content-Type': 'application/json',
+        Prefer: 'resolution=merge-duplicates,return=minimal'
+      },
+      body: JSON.stringify({ kode, berkas: cloudOnly })
+    });
+    return res.ok;
+  } catch (e) { return false; }
+}
+
+function renderMateriFilesSection(kode) {
+  const files = appState.materiFiles[kode] || [];
+  const owner = appState.isLoggedIn;
+  const list = files.length
+    ? '<div class="materi-file-list">' + files.map((b) => `
+        <div class="materi-file-item">
+          <span>${berkasIcon(b.name)}</span>
+          <button type="button" class="mf-open" title="${escBerkas(b.name)}" onclick="openMateriBerkas('${kode}','${escBerkas(b.id)}')">${escBerkas(b.name)}</button>
+          <span class="mf-size">${fmtSize(b.size)}</span>
+          ${owner ? `<button type="button" class="action-link danger" onclick="deleteMateriBerkas('${kode}','${escBerkas(b.id)}')">Hapus</button>` : ''}
+        </div>`).join('') + '</div>'
+    : `<div class="materi-files-empty">Belum ada berkas untuk pertemuan ini.</div>`;
+
+  const uploader = owner ? `
+    <div class="materi-file-row" style="margin-top:8px;">
+      <button type="button" class="resource-link-btn materi-upload-btn" onclick="pickMateriFiles('${kode}', this)">⬆️ Upload Berkas</button>
+    </div>
+    <div class="materi-upload-hint">PDF, Word, atau PowerPoint · maks. 20 MB per file · ${supaReady() ? '☁️ tersimpan di Cloud' : '💾 mode lokal (hanya di browser ini)'}</div>` : '';
+
+  return `
+    <div class="materi-files">
+      <div class="materi-files-title">📎 Berkas Materi ${files.length ? `<span class="tag-badge">${files.length}</span>` : ''}</div>
+      ${list}
+      ${uploader}
+    </div>`;
+}
+
+window.openMateriBerkas = function(kode, fileId) {
+  playCyberSound('click');
+  const b = (appState.materiFiles[kode] || []).find((x) => x.id === fileId);
+  openBerkasMeta(b);
+};
+
+window.pickMateriFiles = function(kode, btn) {
+  if (!appState.isLoggedIn) {
+    showToast('Silakan masuk sebagai pemilik untuk mengunggah berkas.');
+    openGatewayScreen();
+    return;
+  }
+  playCyberSound('click');
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.multiple = true;
+  input.accept = '.pdf,.doc,.docx,.ppt,.pptx';
+  input.addEventListener('change', async () => {
+    const picked = Array.from(input.files);
+    if (!picked.length) return;
+    const valid = [];
+    picked.forEach((f) => {
+      if (!BERKAS_MIME[berkasExt(f.name)]) { showToast(`"${f.name}" ditolak: hanya PDF, Word, atau PowerPoint.`); return; }
+      if (f.size > BERKAS_MAX) { showToast(`"${f.name}" terlalu besar (maks. 20 MB).`); return; }
+      valid.push(f);
+    });
+    if (!valid.length) return;
+
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Mengunggah...'; }
+    const failed = [];
+    const list = (appState.materiFiles[kode] = appState.materiFiles[kode] || []);
+    for (const f of valid) {
+      try { list.push(await uploadBerkas(f, 'materi-' + kode)); } catch (err) { failed.push(f.name); }
+    }
+    const synced = await persistMateriFiles(kode);
+    renderMateriList();
+
+    const okCount = valid.length - failed.length;
+    if (okCount) { playCyberSound('success'); showToast(`${okCount} berkas ditambahkan ke ${kode}.`); }
+    if (failed.length) showToast(`Gagal mengunggah: ${failed.join(', ')}. Pastikan bucket "${BERKAS_BUCKET}" sudah dibuat.`);
+    if (!synced) showToast('Tersimpan di perangkat ini, tetapi gagal sinkron ke Cloud. Cek tabel "materi_berkas" (lihat supabase-setup.sql).');
+  });
+  input.click();
+};
+
+window.deleteMateriBerkas = async function(kode, fileId) {
+  playCyberSound('click');
+  if (!appState.isLoggedIn) return;
+  const list = appState.materiFiles[kode] || [];
+  const b = list.find((x) => x.id === fileId);
+  if (!b || !confirm(`Hapus berkas "${b.name}"?`)) return;
+  await deleteBerkas(b);
+  appState.materiFiles[kode] = list.filter((x) => x.id !== fileId);
+  await persistMateriFiles(kode);
+  renderMateriList();
+  showToast('Berkas materi dihapus.');
 };
 
 function renderBerkasChips(t) {
